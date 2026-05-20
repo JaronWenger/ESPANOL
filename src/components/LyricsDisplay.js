@@ -41,11 +41,11 @@ export default function LyricsDisplay({
     return () => el.removeEventListener('scroll', onScroll);
   }, []);
 
-  const renderWords = (text, lineIdx) =>
+  const renderWords = (text, isActive) =>
     text.split(/(\s+)/).map((chunk, i) => {
       if (/^\s+$/.test(chunk)) return <span key={i}>{chunk}</span>;
       const cleanWord = chunk.replace(/[^a-záéíóúüñA-ZÁÉÍÓÚÜÑ]/g, '');
-      if (!cleanWord) return <span key={i}>{chunk}</span>;
+      if (!cleanWord || !isActive) return <span key={i}>{chunk}</span>;
       return (
         <span
           key={i}
@@ -79,6 +79,20 @@ export default function LyricsDisplay({
       {lyrics.map((line, idx) => {
         const isActive = idx === activeIdx;
         const isPast = idx < activeIdx;
+
+        if (line.instrumental) {
+          return (
+            <div
+              key={idx}
+              ref={isActive ? activeRef : null}
+              className={`lyric-line lyric-instrumental ${isActive ? 'active' : ''} ${isPast ? 'past' : ''}`}
+              onClick={() => onSeek(line.time)}
+            >
+              <span className="lyric-instrumental-notes">♪ ♪ ♪</span>
+            </div>
+          );
+        }
+
         return (
           <div
             key={idx}
@@ -87,7 +101,7 @@ export default function LyricsDisplay({
             onClick={() => onSeek(line.time)}
           >
             <div className="lyric-spanish">
-              {renderWords(line.spanish, idx)}
+              {renderWords(line.spanish, isActive)}
             </div>
             {showEnglish && line.english && (
               <div className="lyric-english">{line.english}</div>

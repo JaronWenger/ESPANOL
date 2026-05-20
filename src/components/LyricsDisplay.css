@@ -29,6 +29,10 @@
   margin-bottom: 4px;
   user-select: none;
 }
+
+.lyric-line.active {
+  cursor: default;
+}
 .lyric-line:hover {
   background: rgba(255, 255, 255, 0.06);
 }
@@ -72,6 +76,22 @@
 .lyric-word:hover {
   background: rgba(29, 185, 84, 0.25);
   color: #1ed760;
+}
+
+/* Instrumental lines */
+.lyric-instrumental .lyric-instrumental-notes {
+  font-size: 1rem;
+  color: #535353;
+  letter-spacing: 0.3em;
+  transition: color 0.25s;
+}
+
+.lyric-instrumental.active .lyric-instrumental-notes {
+  color: #1db954;
+}
+
+.lyric-instrumental.past .lyric-instrumental-notes {
+  color: #383838;
 }
 
 /* Empty state */

@@ -120,6 +120,13 @@
   50% { opacity: 1; transform: scale(1.2); }
 }
 
+.word-modal-nav-hint {
+  margin-top: 16px;
+  font-size: 0.68rem;
+  color: #535353;
+  letter-spacing: 0.04em;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

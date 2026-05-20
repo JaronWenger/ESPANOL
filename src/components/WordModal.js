@@ -82,6 +82,10 @@ export default function WordModal({ word, onClose }) {
         ) : (
           <div className="word-modal-translation">{translation}</div>
         )}
+
+        <div className="word-modal-nav-hint">
+          ← → to browse words
+        </div>
       </div>
     </div>
   );

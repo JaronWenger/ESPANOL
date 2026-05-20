@@ -24,12 +24,28 @@ export function parseLRC(content) {
       const centis = parseInt(timeMatch[3].padEnd(3, '0'));
       const time = minutes * 60 + seconds + centis / 1000;
       const text = timeMatch[4].trim();
-      if (text) result.push({ time, spanish: text, english: '' });
+      result.push({ time, spanish: text, english: '', instrumental: !text });
     }
   }
 
   result.sort((a, b) => a.time - b.time);
-  return { lyrics: result, meta };
+
+  // Insert instrumental markers for gaps longer than 10 seconds
+  // Place the marker 40% into the gap so the previous lyric stays active long enough to read
+  const withGaps = [];
+  for (let i = 0; i < result.length; i++) {
+    withGaps.push(result[i]);
+    const next = result[i + 1];
+    if (next && !result[i].instrumental && !next.instrumental) {
+      const gap = next.time - result[i].time;
+      if (gap >= 10) {
+        const markerTime = result[i].time + 3.5;
+        withGaps.push({ time: markerTime, spanish: '', english: '', instrumental: true });
+      }
+    }
+  }
+
+  return { lyrics: withGaps, meta };
 }
 
 export function getLyricIndex(lyrics, currentTime) {

@@ -17,6 +17,7 @@ export default function PlayerBar({
   onVolume,
   songTitle,
   songArtist,
+  albumArt,
   showEnglish,
   onToggleEnglish,
   hasAudio,
@@ -27,7 +28,10 @@ export default function PlayerBar({
     <div className="player-bar">
       {/* Song info */}
       <div className="player-info">
-        <div className="player-note">♪</div>
+        {albumArt
+          ? <img src={albumArt} alt="Album art" className="player-album-art" />
+          : <div className="player-note">♪</div>
+        }
         <div className="player-meta">
           <div className="player-title">{songTitle || 'No song loaded'}</div>
           <div className="player-artist">{songArtist || 'Upload a song to begin'}</div>

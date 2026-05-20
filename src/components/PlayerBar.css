@@ -30,6 +30,19 @@
   font-size: 1.4rem;
   flex-shrink: 0;
   color: #1db954;
+  overflow: hidden;
+}
+
+.player-album-art {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.player-meta {
+  min-width: 0; /* allows text-overflow to work inside flex */
 }
 
 .player-title {
@@ -39,7 +52,6 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 160px;
 }
 
 .player-artist {
@@ -48,7 +60,6 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 160px;
 }
 
 /* Center */

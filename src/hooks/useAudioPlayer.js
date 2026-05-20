@@ -35,10 +35,10 @@ export function useAudioPlayer() {
 
   const toggle = useCallback(() => {
     const audio = audioRef.current;
-    if (!audio || !audioSrc) return;
+    if (!audio || !audio.src) return;
     if (audio.paused) audio.play();
     else audio.pause();
-  }, [audioSrc]);
+  }, []);
 
   const seek = useCallback((time) => {
     const audio = audioRef.current;
