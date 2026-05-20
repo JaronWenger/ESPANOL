@@ -57,14 +57,25 @@
 .lyric-english {
   font-size: 0.95rem;
   color: #1db954;
-  margin-top: 3px;
   font-style: italic;
+  overflow: hidden;
+  max-height: 2.5em;
+  margin-top: 3px;
   opacity: 0.85;
-  transition: opacity 0.2s;
+  transition: opacity 0.35s ease, max-height 0.35s ease, margin-top 0.35s ease;
+}
+
+.lyric-english.hidden {
+  opacity: 0;
+  max-height: 0;
+  margin-top: 0;
 }
 
 .lyric-line.past .lyric-english {
   opacity: 0.5;
+}
+.lyric-line.past .lyric-english.hidden {
+  opacity: 0;
 }
 
 .lyric-word {

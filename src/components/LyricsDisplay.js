@@ -103,8 +103,10 @@ export default function LyricsDisplay({
             <div className="lyric-spanish">
               {renderWords(line.spanish, isActive)}
             </div>
-            {showEnglish && line.english && (
-              <div className="lyric-english">{line.english}</div>
+            {line.english && (
+              <div className={`lyric-english ${showEnglish ? 'visible' : 'hidden'}`}>
+                {line.english}
+              </div>
             )}
           </div>
         );

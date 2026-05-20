@@ -20,7 +20,14 @@ export default function PlayerBar({
   albumArt,
   showEnglish,
   onToggleEnglish,
+  translating,
   hasAudio,
+  onPrev,
+  onNext,
+  shuffle,
+  onToggleShuffle,
+  repeat,
+  onToggleRepeat,
 }) {
   const progress = duration ? currentTime / duration : 0;
 
@@ -41,6 +48,31 @@ export default function PlayerBar({
       {/* Center controls */}
       <div className="player-center">
         <div className="player-controls">
+          {/* Shuffle */}
+          <button
+            className={`player-extra-btn ${shuffle ? 'active' : ''}`}
+            onClick={onToggleShuffle}
+            title={shuffle ? 'Shuffle on' : 'Shuffle off'}
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/>
+            </svg>
+          </button>
+
+          {/* Skip prev */}
+          <button
+            className={`player-skip ${!onPrev ? 'disabled' : ''}`}
+            onClick={onPrev}
+            disabled={!onPrev}
+            title="Previous song"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="19,5 9,12 19,19" />
+              <rect x="5" y="5" width="3" height="14" rx="1" />
+            </svg>
+          </button>
+
+          {/* Play/pause */}
           <button
             className={`player-play ${isPlaying ? 'playing' : ''} ${!hasAudio ? 'disabled' : ''}`}
             onClick={onToggle}
@@ -55,6 +87,36 @@ export default function PlayerBar({
             ) : (
               <svg viewBox="0 0 24 24" fill="currentColor">
                 <polygon points="5,3 19,12 5,21" />
+              </svg>
+            )}
+          </button>
+
+          {/* Skip next */}
+          <button
+            className={`player-skip ${!onNext ? 'disabled' : ''}`}
+            onClick={onNext}
+            disabled={!onNext}
+            title="Next song"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="5,5 15,12 5,19" />
+              <rect x="16" y="5" width="3" height="14" rx="1" />
+            </svg>
+          </button>
+
+          {/* Repeat */}
+          <button
+            className={`player-extra-btn ${repeat !== 'off' ? 'active' : ''}`}
+            onClick={onToggleRepeat}
+            title={repeat === 'off' ? 'Repeat off' : repeat === 'all' ? 'Repeat all' : 'Repeat one'}
+          >
+            {repeat === 'one' ? (
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4zm-4-2V9h-1l-2 1v1h1.5v4H13z"/>
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
               </svg>
             )}
           </button>
@@ -84,11 +146,11 @@ export default function PlayerBar({
       <div className="player-right">
         {/* Translation toggle */}
         <button
-          className={`translation-toggle ${showEnglish ? 'active' : ''}`}
+          className={`translation-toggle ${showEnglish ? 'active' : ''} ${translating ? 'loading' : ''}`}
           onClick={onToggleEnglish}
-          title={showEnglish ? 'Hide English translation' : 'Show English translation'}
+          title={translating ? 'Translating…' : showEnglish ? 'Hide English translation' : 'Show English translation'}
         >
-          EN
+          {translating ? '…' : 'EN'}
         </button>
 
         {/* Volume */}

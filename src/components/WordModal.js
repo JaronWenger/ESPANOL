@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { lookupLocal } from '../utils/spanishDict';
 import './WordModal.css';
 
 export default function WordModal({ word, onClose }) {
@@ -28,14 +29,21 @@ export default function WordModal({ word, onClose }) {
     setLoading(true);
     setTranslation('');
 
-    // Strip diacritics before querying — MyMemory gives wrong results for accented chars
-    const normalized = word.normalize('NFD').replace(/[̀-ͯ]/g, '');
+    // Check local dictionary first (instant, no rate limit)
+    const local = lookupLocal(word);
+    if (local) {
+      setTranslation(local);
+      setLoading(false);
+      return;
+    }
+
+    // Fall back to Google Translate (unofficial endpoint, no key needed)
     fetch(
-      `https://api.mymemory.translated.net/get?q=${encodeURIComponent(normalized)}&langpair=es|en`
+      `https://translate.googleapis.com/translate_a/single?client=gtx&sl=es&tl=en&dt=t&q=${encodeURIComponent(word)}`
     )
       .then((r) => r.json())
       .then((d) => {
-        setTranslation(d.responseData?.translatedText || '—');
+        setTranslation(d?.[0]?.[0]?.[0] || '\u2014');
         setLoading(false);
       })
       .catch(() => {
@@ -60,7 +68,7 @@ export default function WordModal({ word, onClose }) {
   return (
     <div className="word-modal-backdrop">
       <div className="word-modal" ref={ref}>
-        <button className="word-modal-close" onClick={onClose}>✕</button>
+        <button className="word-modal-close" onClick={onClose}>&#x2715;</button>
         <div className="word-modal-word">{word}</div>
         <div className="word-modal-lang">Spanish</div>
 
@@ -69,7 +77,7 @@ export default function WordModal({ word, onClose }) {
           onClick={speak}
           title="Hear pronunciation"
         >
-          {speaking ? '🔊 Speaking…' : '🔉 Pronounce'}
+          {speaking ? 'Speaking...' : 'Pronounce'}
         </button>
 
         <div className="word-modal-divider" />
@@ -84,7 +92,7 @@ export default function WordModal({ word, onClose }) {
         )}
 
         <div className="word-modal-nav-hint">
-          ← → to browse words
+          &larr; &rarr; to browse words
         </div>
       </div>
     </div>
