@@ -1,17 +1,21 @@
 {
   "files": {
-    "main.css": "/ESPANOL/static/css/main.a9762550.css",
-    "main.js": "/ESPANOL/static/js/main.4c1f3c2b.js",
+    "main.css": "/ESPANOL/static/css/main.e1cb2d66.css",
+    "main.js": "/ESPANOL/static/js/main.99c5a9d5.js",
     "static/js/453.418ae1c6.chunk.js": "/ESPANOL/static/js/453.418ae1c6.chunk.js",
+    "static/media/BAILE INoLVIDABLE.mp3": "/ESPANOL/static/media/BAILE INoLVIDABLE.132d11ed2840c743dcee.mp3",
+    "static/media/MONACO.mp3": "/ESPANOL/static/media/MONACO.3666fe0effa07745c21d.mp3",
+    "static/media/Vivir Mi Vida.mp3": "/ESPANOL/static/media/Vivir Mi Vida.27af7b6ecd98f81a9563.mp3",
     "static/media/LO QUE LE PASÓ A HAWAii.mp3": "/ESPANOL/static/media/LO QUE LE PASÓ A HAWAii.2326142873fec8f3f40b.mp3",
+    "static/media/ME JALO.mp3": "/ESPANOL/static/media/ME JALO.124e46ac4f53f10552ed.mp3",
     "static/media/Espanol-modified.png": "/ESPANOL/static/media/Espanol-modified.a09409f3507a0b69d1fe.png",
     "index.html": "/ESPANOL/index.html",
-    "main.a9762550.css.map": "/ESPANOL/static/css/main.a9762550.css.map",
-    "main.4c1f3c2b.js.map": "/ESPANOL/static/js/main.4c1f3c2b.js.map",
+    "main.e1cb2d66.css.map": "/ESPANOL/static/css/main.e1cb2d66.css.map",
+    "main.99c5a9d5.js.map": "/ESPANOL/static/js/main.99c5a9d5.js.map",
     "453.418ae1c6.chunk.js.map": "/ESPANOL/static/js/453.418ae1c6.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.a9762550.css",
-    "static/js/main.4c1f3c2b.js"
+    "static/css/main.e1cb2d66.css",
+    "static/js/main.99c5a9d5.js"
   ]
 }
