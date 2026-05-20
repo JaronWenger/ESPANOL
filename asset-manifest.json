@@ -1,16 +1,17 @@
 {
   "files": {
-    "main.css": "/ESPANOL/static/css/main.ee85aaac.css",
-    "main.js": "/ESPANOL/static/js/main.15dde85c.js",
+    "main.css": "/ESPANOL/static/css/main.a9762550.css",
+    "main.js": "/ESPANOL/static/js/main.4c1f3c2b.js",
     "static/js/453.418ae1c6.chunk.js": "/ESPANOL/static/js/453.418ae1c6.chunk.js",
+    "static/media/LO QUE LE PASÓ A HAWAii.mp3": "/ESPANOL/static/media/LO QUE LE PASÓ A HAWAii.2326142873fec8f3f40b.mp3",
     "static/media/Espanol-modified.png": "/ESPANOL/static/media/Espanol-modified.a09409f3507a0b69d1fe.png",
     "index.html": "/ESPANOL/index.html",
-    "main.ee85aaac.css.map": "/ESPANOL/static/css/main.ee85aaac.css.map",
-    "main.15dde85c.js.map": "/ESPANOL/static/js/main.15dde85c.js.map",
+    "main.a9762550.css.map": "/ESPANOL/static/css/main.a9762550.css.map",
+    "main.4c1f3c2b.js.map": "/ESPANOL/static/js/main.4c1f3c2b.js.map",
     "453.418ae1c6.chunk.js.map": "/ESPANOL/static/js/453.418ae1c6.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.ee85aaac.css",
-    "static/js/main.15dde85c.js"
+    "static/css/main.a9762550.css",
+    "static/js/main.4c1f3c2b.js"
   ]
 }
