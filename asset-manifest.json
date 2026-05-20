@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/ESPANOL/static/css/main.ee85aaac.css",
+    "main.js": "/ESPANOL/static/js/main.15dde85c.js",
+    "static/js/453.418ae1c6.chunk.js": "/ESPANOL/static/js/453.418ae1c6.chunk.js",
+    "static/media/Espanol-modified.png": "/ESPANOL/static/media/Espanol-modified.a09409f3507a0b69d1fe.png",
+    "index.html": "/ESPANOL/index.html",
+    "main.ee85aaac.css.map": "/ESPANOL/static/css/main.ee85aaac.css.map",
+    "main.15dde85c.js.map": "/ESPANOL/static/js/main.15dde85c.js.map",
+    "453.418ae1c6.chunk.js.map": "/ESPANOL/static/js/453.418ae1c6.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.ee85aaac.css",
+    "static/js/main.15dde85c.js"
+  ]
+}
