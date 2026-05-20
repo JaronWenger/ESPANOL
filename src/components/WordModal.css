@@ -1,0 +1,131 @@
+.word-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.15s ease;
+}
+
+.word-modal {
+  background: #282828;
+  border: 1px solid #404040;
+  border-radius: 16px;
+  padding: 32px 36px;
+  min-width: 260px;
+  max-width: 360px;
+  text-align: center;
+  position: relative;
+  animation: slideUp 0.18s ease;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+}
+
+.word-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: none;
+  border: none;
+  color: #b3b3b3;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 50%;
+  transition: background 0.15s, color 0.15s;
+}
+.word-modal-close:hover {
+  background: #404040;
+  color: #fff;
+}
+
+.word-modal-word {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+  letter-spacing: -0.01em;
+}
+
+.word-modal-lang {
+  font-size: 0.75rem;
+  color: #1db954;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 20px;
+}
+
+.word-modal-speak {
+  background: #1db954;
+  border: none;
+  border-radius: 999px;
+  color: #000;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 8px 20px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  margin-bottom: 24px;
+}
+.word-modal-speak:hover {
+  background: #1ed760;
+  transform: scale(1.04);
+}
+.word-modal-speak.speaking {
+  background: #158a3e;
+}
+
+.word-modal-divider {
+  height: 1px;
+  background: #404040;
+  margin: 0 -8px 20px;
+}
+
+.word-modal-label {
+  font-size: 0.7rem;
+  color: #b3b3b3;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.word-modal-translation {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #fff;
+  min-height: 36px;
+}
+
+.word-modal-loading {
+  display: flex;
+  justify-content: center;
+  min-height: 36px;
+  align-items: center;
+}
+
+.dot-pulse {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #1db954;
+  border-radius: 50%;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(16px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
