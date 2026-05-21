@@ -427,10 +427,3 @@
   }
 }
 
-/* In PWA standalone mode the browser chrome is gone — override the full padding
-   shorthand to nuke the env(safe-area-inset-bottom) calc from the mobile rule. */
-@media (max-width: 600px) and (display-mode: standalone) {
-  .player-bar {
-    padding: 14px 16px 2px;
-  }
-}
