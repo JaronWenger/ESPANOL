@@ -50,8 +50,9 @@ export function useAudioPlayer() {
     if (!audio || !audio.src) return;
     if (audio.paused) {
       if (pendingSeekRef.current !== null) {
+        // Best-effort if metadata already loaded (desktop). If readyState=0 (iOS),
+        // this is a no-op — onLoadedMetadata applies it once iOS loads.
         audio.currentTime = pendingSeekRef.current;
-        pendingSeekRef.current = null;
       }
       audio.play().catch(() => {});
     } else {
