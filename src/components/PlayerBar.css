@@ -420,3 +420,11 @@
     height: 30px;
   }
 }
+
+/* In PWA standalone mode the browser chrome is gone, so env(safe-area-inset-bottom)
+   (~34px on modern iPhones) would push the bar up too far. Cap it at 12px. */
+@media (max-width: 600px) and (display-mode: standalone) {
+  .player-bar {
+    padding-bottom: min(max(4px, env(safe-area-inset-bottom)), 12px);
+  }
+}
