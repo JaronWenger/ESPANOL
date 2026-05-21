@@ -32,28 +32,6 @@ function shuffleArray(arr) {
 export default function App() {
   const player = useAudioPlayer();
 
-  // iOS PWA: 100dvh is smaller than the real viewport on launch because the
-  // WKWebView hasn't finished settling. Call setHeight immediately, then again
-  // at 300 ms once the viewport has stabilized, and on every resize/rotation.
-  useEffect(() => {
-    const setHeight = () => {
-      document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
-    };
-    setHeight();
-    const settle = setTimeout(setHeight, 300);
-    const onOrientationChange = () => {
-      const a = setTimeout(setHeight, 100);
-      const b = setTimeout(setHeight, 400);
-      return () => { clearTimeout(a); clearTimeout(b); };
-    };
-    window.addEventListener('resize', setHeight);
-    window.addEventListener('orientationchange', onOrientationChange);
-    return () => {
-      clearTimeout(settle);
-      window.removeEventListener('resize', setHeight);
-      window.removeEventListener('orientationchange', onOrientationChange);
-    };
-  }, []);
   const [builtInIdx, setBuiltInIdx] = useState(0);
   const [song, setSong] = useState({ ...BUILT_IN_SONGS[0] });
   const [showEnglish, setShowEnglish] = useState(true);
