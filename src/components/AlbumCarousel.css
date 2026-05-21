@@ -9,6 +9,10 @@
   align-items: center;
 }
 
+.album-carousel-track.snapping .carousel-cover {
+  transition: none !important;
+}
+
 .carousel-cover {
   width: 48px;
   height: 48px;

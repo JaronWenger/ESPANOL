@@ -1,16 +1,21 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
 import './AlbumCarousel.css';
 
 const CLONE = 2;
 const ITEM_W = 48;
 const GAP = 10;
 const STEP = ITEM_W + GAP;
+const TRANSITION = 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)';
 
 export default function AlbumCarousel({ songs, albumArts, currentIdx, onOpen, onSelect }) {
   const n = songs.length;
   const trackRef = useRef(null);
   const [trackPos, setTrackPos] = useState(currentIdx + CLONE);
+  const trackPosRef = useRef(trackPos);
+  trackPosRef.current = trackPos; // always current, safe to read in event handlers
+
   const prevIdxRef = useRef(currentIdx);
+  const suppressRef = useRef(false); // when true, next trackPos render snaps without animation
   const [brokenUrls, setBrokenUrls] = useState(new Set());
 
   const handleImgError = useCallback((url) => {
@@ -37,34 +42,33 @@ export default function AlbumCarousel({ songs, albumArts, currentIdx, onOpen, on
     } else if (goBackward) {
       setTrackPos(p => p - 1);
     } else {
-      const track = trackRef.current;
-      if (track) track.style.transition = 'none';
+      suppressRef.current = true;
       setTrackPos(currentIdx + CLONE);
-      requestAnimationFrame(() => {
-        if (trackRef.current) trackRef.current.style.transition = '';
-      });
     }
   }, [currentIdx, n]);
 
+  // Runs after React mutates the DOM but before the browser paints.
+  // When suppressRef is set, disable the transition for this frame only so
+  // the clone→real snap is invisible, then restore it in the next rAF.
+  useLayoutEffect(() => {
+    if (!suppressRef.current || !trackRef.current) return;
+    suppressRef.current = false;
+    trackRef.current.style.transition = 'none';
+    trackRef.current.classList.add('snapping');
+    requestAnimationFrame(() => {
+      if (trackRef.current) {
+        trackRef.current.style.transition = TRANSITION;
+        trackRef.current.classList.remove('snapping');
+      }
+    });
+  }, [trackPos]);
+
   const handleTransitionEnd = (e) => {
     if (e.propertyName !== 'transform') return;
-    const track = trackRef.current;
-    if (!track) return;
-
-    setTrackPos(pos => {
-      let next = pos;
-      if (pos < CLONE) next = pos + n;
-      else if (pos >= CLONE + n) next = pos - n;
-      if (next !== pos) {
-        track.style.transition = 'none';
-        requestAnimationFrame(() =>
-          requestAnimationFrame(() => {
-            if (trackRef.current) trackRef.current.style.transition = '';
-          })
-        );
-      }
-      return next;
-    });
+    const pos = trackPosRef.current;
+    if (pos >= CLONE && pos < CLONE + n) return; // real position, nothing to do
+    suppressRef.current = true;
+    setTrackPos(pos < CLONE ? pos + n : pos - n);
   };
 
   // Container width = 3 visible items

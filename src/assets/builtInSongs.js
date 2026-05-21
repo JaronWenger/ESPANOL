@@ -20,18 +20,21 @@ export const BUILT_IN_SONGS = [
     artist: 'Marc Anthony',
     audioUrl: vivirAudio,
     lyrics: VIVIR_LYRICS,
+    albumArt: 'https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/f7/24/ce/f724ce48-4d0d-0cbc-3493-3d935142e5e6/886443947238.jpg/500x500bb.jpg',
   },
   {
     title: 'Lo Que Le Pasó a Hawaii',
     artist: 'Bad Bunny',
     audioUrl: hawaiiAudio,
     lyrics: DEFAULT_LYRICS,
+    albumArt: 'https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/90/5e/7e/905e7ed5-a8fa-a8f3-cd06-0028fdf3afaa/199066342442.jpg/500x500bb.jpg',
   },
   {
     title: 'Me Jalo',
-    artist: 'Fuerza Regida',
+    artist: 'Fuerza Regida & Grupo Frontera',
     audioUrl: meJaloAudio,
     lyrics: ME_JALO_LYRICS,
+    albumArt: 'https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/ba/96/9e/ba969e5d-857d-bbda-08e2-edc08642d188/196872772869.jpg/500x500bb.jpg',
   },
   {
     title: 'BAILE INoLVIDABLE',

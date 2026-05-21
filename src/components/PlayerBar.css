@@ -3,6 +3,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 24px 16px;
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
   background: #181818;
   border-top: 1px solid #282828;
   gap: 16px;
@@ -315,7 +316,8 @@
   /* Stack info on top, controls below — full width both */
   .player-bar {
     flex-wrap: wrap;
-    padding: 14px 16px 16px;
+    padding: 14px 16px 28px;
+    padding-bottom: max(28px, env(safe-area-inset-bottom));
     gap: 0;
     min-height: unset;
   }
