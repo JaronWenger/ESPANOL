@@ -33,20 +33,27 @@ export default function App() {
   const player = useAudioPlayer();
 
   // iOS PWA: 100dvh doesn't re-settle after orientation changes.
-  // Drive height from visualViewport which fires resize after the viewport stabilizes.
+  // window.resize gives the correct innerHeight once the layout settles.
+  // orientationchange fires before innerHeight updates, so we also poke it
+  // with short timeouts to catch the final settled value.
   useEffect(() => {
     const setHeight = () => {
-      const h = window.visualViewport?.height ?? window.innerHeight;
-      document.documentElement.style.setProperty('--app-height', `${h}px`);
+      document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
     };
     setHeight();
-    const vvp = window.visualViewport;
-    if (vvp) {
-      vvp.addEventListener('resize', setHeight);
-      return () => vvp.removeEventListener('resize', setHeight);
-    }
     window.addEventListener('resize', setHeight);
-    return () => window.removeEventListener('resize', setHeight);
+    const t1 = { id: null }, t2 = { id: null };
+    const onOrientationChange = () => {
+      t1.id = setTimeout(setHeight, 100);
+      t2.id = setTimeout(setHeight, 400);
+    };
+    window.addEventListener('orientationchange', onOrientationChange);
+    return () => {
+      window.removeEventListener('resize', setHeight);
+      window.removeEventListener('orientationchange', onOrientationChange);
+      clearTimeout(t1.id);
+      clearTimeout(t2.id);
+    };
   }, []);
   const [builtInIdx, setBuiltInIdx] = useState(0);
   const [song, setSong] = useState({ ...BUILT_IN_SONGS[0] });
