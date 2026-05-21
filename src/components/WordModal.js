@@ -4,7 +4,7 @@ import './WordModal.css';
 
 const SWIPE_THRESHOLD = 40;
 
-export default function WordModal({ word, onClose, onNavigate }) {
+export default function WordModal({ word, onClose, onNavigate, onSpeak }) {
   const [translation, setTranslation] = useState('');
   const [loading, setLoading] = useState(true);
   const [speaking, setSpeaking] = useState(false);
@@ -69,14 +69,10 @@ export default function WordModal({ word, onClose, onNavigate }) {
   };
 
   const speak = () => {
-    if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(word);
-    utter.lang = 'es-ES';
-    utter.rate = 0.75;
-    utter.onstart = () => setSpeaking(true);
-    utter.onend = () => setSpeaking(false);
-    window.speechSynthesis.speak(utter);
+    onSpeak(word, {
+      onStart: () => setSpeaking(true),
+      onEnd:   () => setSpeaking(false),
+    });
   };
 
   if (!word) return null;

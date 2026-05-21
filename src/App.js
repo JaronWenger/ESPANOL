@@ -7,6 +7,7 @@ import WordModal from './components/WordModal';
 import AlbumCarousel from './components/AlbumCarousel';
 import PlaylistModal from './components/PlaylistModal';
 import { getLyricIndex } from './utils/lrcParser';
+import { speakEs } from './utils/speech';
 import { fetchAlbumArt } from './utils/albumArt';
 import { translateLyrics } from './utils/translateLyrics';
 import logo from './assets/Espanol-modified.png';
@@ -56,6 +57,7 @@ export default function App() {
   const shuffleOrderRef = useRef(shuffleOrder);
   // Set to true before a manual skip so the src-change useEffect auto-plays
   const shouldPlayOnLoadRef = useRef(false);
+  const isFirstLoadRef = useRef(true);
   useEffect(() => { builtInIdxRef.current = builtInIdx; }, [builtInIdx]);
   useEffect(() => { shuffleRef.current = shuffle; }, [shuffle]);
   useEffect(() => { repeatRef.current = repeat; }, [repeat]);
@@ -193,6 +195,10 @@ export default function App() {
     if (!audio) return;
     if (song.audioUrl) {
       audio.src = song.audioUrl;
+      if (isFirstLoadRef.current) {
+        isFirstLoadRef.current = false;
+        audio.addEventListener('loadedmetadata', () => { audio.currentTime = 0.5; }, { once: true });
+      }
       if (shouldPlayOnLoadRef.current) {
         shouldPlayOnLoadRef.current = false;
         audio.play().catch(() => {});
@@ -235,14 +241,15 @@ export default function App() {
     return (builtInIdx + dir + BUILT_IN_SONGS.length) % BUILT_IN_SONGS.length;
   }, [builtInIdx, shuffle, shuffleOrder]);
 
-  const speakSpanish = useCallback((text) => {
-    if (!window.speechSynthesis || !text) return;
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = 'es-ES';
-    utter.rate = 0.75;
-    window.speechSynthesis.cancel();
-    setTimeout(() => window.speechSynthesis.speak(utter), 50);
-  }, []);
+  const speakSpanish = useCallback((text) => speakEs(text), []);
+
+  // Used by WordModal — also boosts gain to counteract iOS audio session ducking.
+  const handleSpeak = useCallback((word, { onStart, onEnd } = {}) => {
+    speakEs(word, {
+      onStart: () => { player.setGain(2); onStart?.(); },
+      onEnd:   () => { player.setGain(1); onEnd?.();   },
+    });
+  }, [player]);
 
   const navigateWord = useCallback((dir) => {
     const nextWordIdx = wordIdx + dir;
@@ -419,6 +426,7 @@ export default function App() {
           word={selectedWord}
           onClose={() => setSelectedWord(null)}
           onNavigate={navigateWord}
+          onSpeak={handleSpeak}
         />
       )}
     </div>

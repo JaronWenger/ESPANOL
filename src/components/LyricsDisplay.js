@@ -1,15 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { getLyricIndex } from '../utils/lrcParser';
+import { speakEs } from '../utils/speech';
 import './LyricsDisplay.css';
-
-function speakLine(text) {
-  if (!window.speechSynthesis || !text) return;
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = 'es-ES';
-  utter.rate = 0.75;
-  window.speechSynthesis.cancel();
-  setTimeout(() => window.speechSynthesis.speak(utter), 50);
-}
 
 export default function LyricsDisplay({
   lyrics,
@@ -35,6 +27,27 @@ export default function LyricsDisplay({
       });
     }
   }, [activeIdx]);
+
+  // Anchor the active line in place while EN translations animate in/out.
+  // Each rAF tick measures how far the element drifted and cancels it via scrollTop.
+  useEffect(() => {
+    const el = activeRef.current;
+    const container = containerRef.current;
+    if (!el || !container) return;
+
+    const anchorTop = el.getBoundingClientRect().top;
+    const deadline = performance.now() + 400; // outlast the 350ms CSS transition
+
+    let rafId;
+    const tick = () => {
+      const drift = el.getBoundingClientRect().top - anchorTop;
+      if (Math.abs(drift) > 0.5) container.scrollTop += drift;
+      if (performance.now() < deadline) rafId = requestAnimationFrame(tick);
+    };
+
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [showEnglish]);
 
   // Track user scroll to pause auto-scroll temporarily
   useEffect(() => {
@@ -110,7 +123,7 @@ export default function LyricsDisplay({
             className={`lyric-line ${isActive ? 'active' : ''} ${isPast ? 'past' : ''}`}
             onClick={() => {
               if (isActive && !isPlaying) {
-                speakLine(line.spanish);
+                speakEs(line.spanish);
                 onSeek(line.time);
               } else {
                 onSeek(line.time);
