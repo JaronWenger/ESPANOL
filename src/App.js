@@ -31,6 +31,23 @@ function shuffleArray(arr) {
 
 export default function App() {
   const player = useAudioPlayer();
+
+  // iOS PWA: 100dvh doesn't re-settle after orientation changes.
+  // Drive height from visualViewport which fires resize after the viewport stabilizes.
+  useEffect(() => {
+    const setHeight = () => {
+      const h = window.visualViewport?.height ?? window.innerHeight;
+      document.documentElement.style.setProperty('--app-height', `${h}px`);
+    };
+    setHeight();
+    const vvp = window.visualViewport;
+    if (vvp) {
+      vvp.addEventListener('resize', setHeight);
+      return () => vvp.removeEventListener('resize', setHeight);
+    }
+    window.addEventListener('resize', setHeight);
+    return () => window.removeEventListener('resize', setHeight);
+  }, []);
   const [builtInIdx, setBuiltInIdx] = useState(0);
   const [song, setSong] = useState({ ...BUILT_IN_SONGS[0] });
   const [showEnglish, setShowEnglish] = useState(true);

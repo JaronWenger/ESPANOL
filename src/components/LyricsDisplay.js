@@ -17,6 +17,8 @@ export default function LyricsDisplay({
   const userScrollingRef = useRef(false);
   const scrollTimeoutRef = useRef(null);
   const prevActiveIdxRef = useRef(activeIdx);
+  // iOS Safari ignores smooth scrollIntoView during mount — use instant on first call.
+  const isFirstScrollRef = useRef(true);
 
   // Auto-scroll active line to center.
   // A jump of more than 1 line means the user seeked — override scroll suppression.
@@ -26,10 +28,9 @@ export default function LyricsDisplay({
     if (Math.abs(activeIdx - prev) > 1) userScrollingRef.current = false;
     if (userScrollingRef.current) return;
     if (activeRef.current && containerRef.current) {
-      activeRef.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-      });
+      const behavior = isFirstScrollRef.current ? 'instant' : 'smooth';
+      isFirstScrollRef.current = false;
+      activeRef.current.scrollIntoView({ behavior, block: 'center' });
     }
   }, [activeIdx]);
 
