@@ -407,6 +407,7 @@
 
   .player-progress-row {
     margin-top: 4px;
+    padding-bottom: 4px;
   }
   .player-play {
     width: 46px;
@@ -426,10 +427,10 @@
   }
 }
 
-/* In PWA standalone mode the browser chrome is gone, so env(safe-area-inset-bottom)
-   (~34px on modern iPhones) would push the bar up too far. */
+/* In PWA standalone mode the browser chrome is gone — override the full padding
+   shorthand to nuke the env(safe-area-inset-bottom) calc from the mobile rule. */
 @media (max-width: 600px) and (display-mode: standalone) {
   .player-bar {
-    padding-bottom: 2px;
+    padding: 14px 16px 2px;
   }
 }
