@@ -48,8 +48,15 @@ export function useAudioPlayer() {
   const toggle = useCallback(() => {
     const audio = audioRef.current;
     if (!audio || !audio.src) return;
-    if (audio.paused) audio.play();
-    else audio.pause();
+    if (audio.paused) {
+      if (pendingSeekRef.current !== null) {
+        audio.currentTime = pendingSeekRef.current;
+        pendingSeekRef.current = null;
+      }
+      audio.play().catch(() => {});
+    } else {
+      audio.pause();
+    }
   }, []);
 
   const seek = useCallback((time) => {
