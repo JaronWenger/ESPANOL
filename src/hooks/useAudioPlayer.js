@@ -122,7 +122,10 @@ export function useAudioPlayer() {
     const audio = audioRef.current;
     if (!audio) return;
     setCurrentTime(time);
-    if (audio.readyState >= 1) {
+    if (audio.readyState >= 2) {
+      // readyState 2+ means the browser has buffered data and will honor a seek.
+      // readyState 0-1 on iOS: no buffered data, currentTime assignment is silently
+      // ignored. Store for toggle() to apply via the muted-play-then-seek path.
       audio.currentTime = time;
     } else {
       pendingSeekRef.current = time;
