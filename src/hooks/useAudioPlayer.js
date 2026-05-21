@@ -94,9 +94,11 @@ export function useAudioPlayer() {
       const seekTo = pendingSeekRef.current;
       pendingSeekRef.current = null;
 
-      if (seekTo !== null && audio.readyState < 1) {
-        // The silent unlock didn't fire yet (e.g. first tap was play itself and
-        // the unlock raced with this call). Mute, force-load, seek, unmute.
+      if (seekTo !== null && audio.readyState < 2) {
+        // readyState 0: silent unlock hasn't fired yet.
+        // readyState 1: silent unlock ran (metadata loaded) but iOS still won't
+        // honor a currentTime assignment before play() — it needs an active play
+        // context to make range requests. Mute, start play, seek in .then(), unmute.
         audio.muted = true;
         audio.play()
           .then(() => {
