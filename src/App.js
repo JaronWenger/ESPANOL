@@ -57,11 +57,11 @@ export default function App() {
   const shuffleOrderRef = useRef(shuffleOrder);
   // Set to true before a manual skip so the src-change useEffect auto-plays
   const shouldPlayOnLoadRef = useRef(false);
-  const isFirstLoadRef = useRef(true);
   useEffect(() => { builtInIdxRef.current = builtInIdx; }, [builtInIdx]);
   useEffect(() => { shuffleRef.current = shuffle; }, [shuffle]);
   useEffect(() => { repeatRef.current = repeat; }, [repeat]);
   useEffect(() => { shuffleOrderRef.current = shuffleOrder; }, [shuffleOrder]);
+
 
   // Pre-fetch album arts for all built-in songs that don't have hardcoded art
   useEffect(() => {
@@ -195,10 +195,6 @@ export default function App() {
     if (!audio) return;
     if (song.audioUrl) {
       audio.src = song.audioUrl;
-      if (isFirstLoadRef.current) {
-        isFirstLoadRef.current = false;
-        audio.addEventListener('loadedmetadata', () => { audio.currentTime = 0.5; }, { once: true });
-      }
       if (shouldPlayOnLoadRef.current) {
         shouldPlayOnLoadRef.current = false;
         audio.play().catch(() => {});
