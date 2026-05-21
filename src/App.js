@@ -163,15 +163,9 @@ export default function App() {
       }
 
       const next = BUILT_IN_SONGS[nextIdx];
+      shouldPlayOnLoadRef.current = true;
       setBuiltInIdx(nextIdx);
       setSong({ ...next, albumArt: next.albumArt || null });
-      audio.src = next.audioUrl;
-      audio.play();
-      if (!next.albumArt) {
-        fetchAlbumArt(next.title, next.artist)
-          .then((art) => { if (art) setSong((prev) => ({ ...prev, albumArt: art })); })
-          .catch(() => {});
-      }
     };
 
     audio.addEventListener('ended', handleEnded);
@@ -241,11 +235,22 @@ export default function App() {
     return (builtInIdx + dir + BUILT_IN_SONGS.length) % BUILT_IN_SONGS.length;
   }, [builtInIdx, shuffle, shuffleOrder]);
 
+  const speakSpanish = useCallback((text) => {
+    if (!window.speechSynthesis || !text) return;
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'es-ES';
+    utter.rate = 0.75;
+    window.speechSynthesis.cancel();
+    setTimeout(() => window.speechSynthesis.speak(utter), 50);
+  }, []);
+
   const navigateWord = useCallback((dir) => {
     const nextWordIdx = wordIdx + dir;
     if (nextWordIdx >= 0 && nextWordIdx < wordList.length) {
+      const word = wordList[nextWordIdx];
       setWordIdx(nextWordIdx);
-      setSelectedWord(wordList[nextWordIdx]);
+      setSelectedWord(word);
+      if (!player.isPlaying) speakSpanish(word);
     } else {
       const lyrics = song.lyrics;
       let nextLine = lineIdx + dir;
@@ -260,10 +265,11 @@ export default function App() {
           setWordList(words);
           setWordIdx(newWordIdx);
           setSelectedWord(words[newWordIdx]);
+          if (!player.isPlaying) speakSpanish(words[newWordIdx]);
         }
       }
     }
-  }, [wordIdx, wordList, lineIdx, song.lyrics]);
+  }, [wordIdx, wordList, lineIdx, song.lyrics, player.isPlaying, speakSpanish]);
 
   // Keyboard handler
   useEffect(() => {
@@ -343,6 +349,7 @@ export default function App() {
       <LyricsDisplay
         lyrics={song.lyrics}
         currentTime={player.currentTime}
+        isPlaying={player.isPlaying}
         showEnglish={showEnglish}
         onSeek={player.seek}
         onWordClick={(word) => {
@@ -355,6 +362,7 @@ export default function App() {
           setWordList(words);
           setWordIdx(idx >= 0 ? idx : 0);
           setSelectedWord(word);
+          if (!player.isPlaying) speakSpanish(word);
         }}
       />
 

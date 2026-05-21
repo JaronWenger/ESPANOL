@@ -2,9 +2,19 @@ import { useEffect, useRef } from 'react';
 import { getLyricIndex } from '../utils/lrcParser';
 import './LyricsDisplay.css';
 
+function speakLine(text) {
+  if (!window.speechSynthesis || !text) return;
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'es-ES';
+  utter.rate = 0.75;
+  window.speechSynthesis.cancel();
+  setTimeout(() => window.speechSynthesis.speak(utter), 50);
+}
+
 export default function LyricsDisplay({
   lyrics,
   currentTime,
+  isPlaying,
   showEnglish,
   onSeek,
   onWordClick,
@@ -86,7 +96,7 @@ export default function LyricsDisplay({
               key={idx}
               ref={isActive ? activeRef : null}
               className={`lyric-line lyric-instrumental ${isActive ? 'active' : ''} ${isPast ? 'past' : ''}`}
-              onClick={() => onSeek(line.time)}
+              onClick={() => { if (!isActive || isPlaying) onSeek(line.time); }}
             >
               <span className="lyric-instrumental-notes">♪ ♪ ♪</span>
             </div>
@@ -98,7 +108,10 @@ export default function LyricsDisplay({
             key={idx}
             ref={isActive ? activeRef : null}
             className={`lyric-line ${isActive ? 'active' : ''} ${isPast ? 'past' : ''}`}
-            onClick={() => onSeek(line.time)}
+            onClick={() => {
+              if (isActive && !isPlaying) speakLine(line.spanish);
+              else onSeek(line.time);
+            }}
           >
             <div className="lyric-spanish">
               {renderWords(line.spanish, isActive)}

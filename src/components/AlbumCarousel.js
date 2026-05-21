@@ -17,6 +17,8 @@ export default function AlbumCarousel({ songs, albumArts, currentIdx, onOpen, on
   const prevIdxRef = useRef(currentIdx);
   const suppressRef = useRef(false); // when true, next trackPos render snaps without animation
   const [brokenUrls, setBrokenUrls] = useState(new Set());
+  const touchStartXRef = useRef(null);
+  const SWIPE_THRESHOLD = 40;
 
   const handleImgError = useCallback((url) => {
     setBrokenUrls(prev => new Set([...prev, url]));
@@ -75,8 +77,27 @@ export default function AlbumCarousel({ songs, albumArts, currentIdx, onOpen, on
   const containerW = ITEM_W + 2 * STEP;
   const translateX = containerW / 2 - ITEM_W / 2 - trackPos * STEP;
 
+  const handleTouchStart = (e) => {
+    touchStartXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartXRef.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartXRef.current;
+    touchStartXRef.current = null;
+    if (Math.abs(dx) < SWIPE_THRESHOLD) return;
+    const pos = trackPosRef.current;
+    const adjacentSongIdx = trackItems[dx < 0 ? pos + 1 : pos - 1];
+    if (adjacentSongIdx !== undefined) onSelect(adjacentSongIdx);
+  };
+
   return (
-    <div className="album-carousel" style={{ width: containerW }}>
+    <div
+      className="album-carousel"
+      style={{ width: containerW }}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       <div
         ref={trackRef}
         className="album-carousel-track"

@@ -52,7 +52,7 @@ export function getLyricIndex(lyrics, currentTime) {
   if (!lyrics.length) return -1;
   let idx = 0;
   for (let i = 0; i < lyrics.length; i++) {
-    if (currentTime >= lyrics[i].time) idx = i;
+    if (currentTime >= lyrics[i].time - 0.05) idx = i;
     else break;
   }
   return idx;

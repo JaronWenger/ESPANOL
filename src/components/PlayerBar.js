@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import './PlayerBar.css';
 
 function formatTime(secs) {
@@ -30,9 +30,40 @@ export default function PlayerBar({
   repeat,
   onToggleRepeat,
 }) {
-  const progress = duration ? currentTime / duration : 0;
   const [artBroken, setArtBroken] = useState(false);
   useEffect(() => { setArtBroken(false); }, [albumArt]);
+
+  // Custom scrubber state
+  const [scrubbing, setScrubbing] = useState(false);
+  const [scrubValue, setScrubValue] = useState(null);
+  const scrubTrackRef = useRef(null);
+
+  const getRatio = (e) => {
+    const rect = scrubTrackRef.current.getBoundingClientRect();
+    return Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  };
+
+  const handleScrubDown = useCallback((e) => {
+    if (!hasAudio || !duration) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setScrubbing(true);
+    setScrubValue(getRatio(e) * duration);
+  }, [hasAudio, duration]);
+
+  const handleScrubMove = useCallback((e) => {
+    if (!scrubbing) return;
+    setScrubValue(getRatio(e) * duration);
+  }, [scrubbing, duration]);
+
+  const handleScrubUp = useCallback((e) => {
+    if (!scrubbing) return;
+    setScrubbing(false);
+    onSeek(getRatio(e) * duration);
+    setScrubValue(null);
+  }, [scrubbing, duration, onSeek]);
+
+  const displayTime = scrubbing && scrubValue !== null ? scrubValue : currentTime;
+  const progress = duration ? displayTime / duration : 0;
 
   return (
     <div className="player-bar">
@@ -140,19 +171,18 @@ export default function PlayerBar({
 
         {/* Progress bar */}
         <div className="player-progress-row">
-          <span className="player-time">{formatTime(currentTime)}</span>
-          <div className="player-progress-track">
-            <input
-              type="range"
-              className="player-scrubber"
-              min={0}
-              max={duration || 1}
-              step={0.1}
-              value={currentTime}
-              onChange={(e) => onSeek(parseFloat(e.target.value))}
-              disabled={!hasAudio}
-              style={{ '--progress': `${progress * 100}%` }}
-            />
+          <span className="player-time">{formatTime(displayTime)}</span>
+          <div
+            ref={scrubTrackRef}
+            className={`player-scrubber-track ${!hasAudio ? 'disabled' : ''} ${scrubbing ? 'scrubbing' : ''}`}
+            onPointerDown={handleScrubDown}
+            onPointerMove={handleScrubMove}
+            onPointerUp={handleScrubUp}
+            onPointerCancel={() => { setScrubbing(false); setScrubValue(null); }}
+          >
+            <div className="player-scrubber-rail" />
+            <div className="player-scrubber-fill" style={{ width: `${progress * 100}%` }} />
+            <div className="player-scrubber-thumb" style={{ left: `${progress * 100}%` }} />
           </div>
           <span className="player-time">{formatTime(duration)}</span>
         </div>
