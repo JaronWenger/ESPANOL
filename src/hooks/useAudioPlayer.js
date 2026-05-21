@@ -24,7 +24,12 @@ export function useAudioPlayer() {
     const onPause = () => { if (!silentPlayRef.current) setIsPlaying(false); };
     // Fallback: if metadata loads without a preceding play() (desktop, or iOS
     // serving from cache), apply any pending seek directly here.
+    // Skip if the silent unlock is in progress — it triggers loadedmetadata
+    // while playing muted, and iOS won't honor a currentTime assignment during
+    // active playback. Leave pendingSeekRef intact for toggle() to apply after
+    // the unlock completes (readyState >= 1, audio paused — seek sticks there).
     const onLoadedMetadata = () => {
+      if (silentPlayRef.current) return;
       if (pendingSeekRef.current !== null) {
         audio.currentTime = pendingSeekRef.current;
         setCurrentTime(pendingSeekRef.current);
