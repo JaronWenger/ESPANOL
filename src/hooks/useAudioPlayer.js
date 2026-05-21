@@ -7,6 +7,9 @@ export function useAudioPlayer() {
   const [duration, setDuration] = useState(0);
   const [volume, setVolumeState] = useState(1);
   const [audioSrc, setAudioSrc] = useState(null);
+  // iOS ignores preload="auto" and won't load audio until play(). Seeks before
+  // that silently fail. Store the desired time here and apply it on loadedmetadata.
+  const pendingSeekRef = useRef(null);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -17,12 +20,20 @@ export function useAudioPlayer() {
     const onEnded = () => setIsPlaying(false);
     const onPlay = () => setIsPlaying(true);
     const onPause = () => setIsPlaying(false);
+    const onLoadedMetadata = () => {
+      if (pendingSeekRef.current !== null) {
+        audio.currentTime = pendingSeekRef.current;
+        setCurrentTime(pendingSeekRef.current);
+        pendingSeekRef.current = null;
+      }
+    };
 
     audio.addEventListener('timeupdate', onTimeUpdate);
     audio.addEventListener('durationchange', onDurationChange);
     audio.addEventListener('ended', onEnded);
     audio.addEventListener('play', onPlay);
     audio.addEventListener('pause', onPause);
+    audio.addEventListener('loadedmetadata', onLoadedMetadata);
 
     return () => {
       audio.removeEventListener('timeupdate', onTimeUpdate);
@@ -30,6 +41,7 @@ export function useAudioPlayer() {
       audio.removeEventListener('ended', onEnded);
       audio.removeEventListener('play', onPlay);
       audio.removeEventListener('pause', onPause);
+      audio.removeEventListener('loadedmetadata', onLoadedMetadata);
     };
   }, []);
 
@@ -43,8 +55,12 @@ export function useAudioPlayer() {
   const seek = useCallback((time) => {
     const audio = audioRef.current;
     if (!audio) return;
-    audio.currentTime = time;
     setCurrentTime(time);
+    if (audio.readyState >= 1) {
+      audio.currentTime = time;
+    } else {
+      pendingSeekRef.current = time;
+    }
   }, []);
 
   const setVolume = useCallback((v) => {
@@ -58,6 +74,7 @@ export function useAudioPlayer() {
     setAudioSrc(src);
     setCurrentTime(0);
     setIsPlaying(false);
+    pendingSeekRef.current = null;
   }, []);
 
   return {
