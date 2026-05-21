@@ -243,14 +243,6 @@ export default function App() {
 
   const speakSpanish = useCallback((text) => speakEs(text), []);
 
-  // Used by WordModal — also boosts gain to counteract iOS audio session ducking.
-  const handleSpeak = useCallback((word, { onStart, onEnd } = {}) => {
-    speakEs(word, {
-      onStart: () => { player.setGain(2); onStart?.(); },
-      onEnd:   () => { player.setGain(1); onEnd?.();   },
-    });
-  }, [player]);
-
   const navigateWord = useCallback((dir) => {
     const nextWordIdx = wordIdx + dir;
     if (nextWordIdx >= 0 && nextWordIdx < wordList.length) {
@@ -426,7 +418,6 @@ export default function App() {
           word={selectedWord}
           onClose={() => setSelectedWord(null)}
           onNavigate={navigateWord}
-          onSpeak={handleSpeak}
         />
       )}
     </div>

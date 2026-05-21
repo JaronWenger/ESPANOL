@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { lookupLocal } from '../utils/spanishDict';
+import { speakEs } from '../utils/speech';
 import './WordModal.css';
 
 const SWIPE_THRESHOLD = 40;
 
-export default function WordModal({ word, onClose, onNavigate, onSpeak }) {
+export default function WordModal({ word, onClose, onNavigate }) {
   const [translation, setTranslation] = useState('');
   const [loading, setLoading] = useState(true);
   const [speaking, setSpeaking] = useState(false);
@@ -69,7 +70,7 @@ export default function WordModal({ word, onClose, onNavigate, onSpeak }) {
   };
 
   const speak = () => {
-    onSpeak(word, {
+    speakEs(word, {
       onStart: () => setSpeaking(true),
       onEnd:   () => setSpeaking(false),
     });
