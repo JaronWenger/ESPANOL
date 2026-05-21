@@ -348,8 +348,8 @@
   /* Stack info on top, controls below — full width both */
   .player-bar {
     flex-wrap: wrap;
-    padding: 14px 16px 0;
-    padding-bottom: env(safe-area-inset-bottom);
+    padding: 14px 16px 8px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
     gap: 0;
     min-height: unset;
   }
@@ -364,7 +364,7 @@
     flex: 0 0 100%;
     min-width: unset;
     gap: 12px;
-    margin-bottom: 12px;
+    margin-bottom: 6px;
   }
   .player-album-art,
   .player-note {
@@ -393,6 +393,11 @@
     flex: 0 0 100%;
     min-width: unset;
     max-width: none;
+    gap: 4px;
+  }
+
+  .player-scrubber-track {
+    height: 28px;
   }
   .player-controls {
     gap: 12px;
