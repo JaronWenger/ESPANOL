@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/ESPANOL/static/css/main.6fc735bf.css",
+    "main.css": "/ESPANOL/static/css/main.ac124a16.css",
     "main.js": "/ESPANOL/static/js/main.ffb5922d.js",
     "static/js/453.418ae1c6.chunk.js": "/ESPANOL/static/js/453.418ae1c6.chunk.js",
     "static/media/BAILE INoLVIDABLE.mp3": "/ESPANOL/static/media/BAILE INoLVIDABLE.132d11ed2840c743dcee.mp3",
@@ -10,12 +10,12 @@
     "static/media/ME JALO.mp3": "/ESPANOL/static/media/ME JALO.124e46ac4f53f10552ed.mp3",
     "static/media/Espanol-modified.png": "/ESPANOL/static/media/Espanol-modified.a09409f3507a0b69d1fe.png",
     "index.html": "/ESPANOL/index.html",
-    "main.6fc735bf.css.map": "/ESPANOL/static/css/main.6fc735bf.css.map",
+    "main.ac124a16.css.map": "/ESPANOL/static/css/main.ac124a16.css.map",
     "main.ffb5922d.js.map": "/ESPANOL/static/js/main.ffb5922d.js.map",
     "453.418ae1c6.chunk.js.map": "/ESPANOL/static/js/453.418ae1c6.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.6fc735bf.css",
+    "static/css/main.ac124a16.css",
     "static/js/main.ffb5922d.js"
   ]
 }
