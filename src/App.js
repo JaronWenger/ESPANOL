@@ -32,25 +32,26 @@ function shuffleArray(arr) {
 export default function App() {
   const player = useAudioPlayer();
 
-  // iOS PWA: 100dvh is correct on initial load but doesn't re-settle after
-  // orientation changes. Don't set --app-height on mount (let 100dvh handle it);
-  // only override via JS once the viewport has settled post-rotation.
+  // iOS PWA: 100dvh is smaller than the real viewport on launch because the
+  // WKWebView hasn't finished settling. Call setHeight immediately, then again
+  // at 300 ms once the viewport has stabilized, and on every resize/rotation.
   useEffect(() => {
     const setHeight = () => {
       document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
     };
-    const t1 = { id: null }, t2 = { id: null };
+    setHeight();
+    const settle = setTimeout(setHeight, 300);
     const onOrientationChange = () => {
-      t1.id = setTimeout(setHeight, 100);
-      t2.id = setTimeout(setHeight, 400);
+      const a = setTimeout(setHeight, 100);
+      const b = setTimeout(setHeight, 400);
+      return () => { clearTimeout(a); clearTimeout(b); };
     };
     window.addEventListener('resize', setHeight);
     window.addEventListener('orientationchange', onOrientationChange);
     return () => {
+      clearTimeout(settle);
       window.removeEventListener('resize', setHeight);
       window.removeEventListener('orientationchange', onOrientationChange);
-      clearTimeout(t1.id);
-      clearTimeout(t2.id);
     };
   }, []);
   const [builtInIdx, setBuiltInIdx] = useState(0);
