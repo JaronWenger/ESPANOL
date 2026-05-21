@@ -348,8 +348,8 @@
   /* Stack info on top, controls below — full width both */
   .player-bar {
     flex-wrap: wrap;
-    padding: 14px 16px 12px;
-    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    padding: 14px 16px 28px;
+    padding-bottom: max(28px, env(safe-area-inset-bottom));
     gap: 0;
     min-height: unset;
   }
