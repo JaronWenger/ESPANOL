@@ -16,9 +16,14 @@ export default function LyricsDisplay({
   const activeRef = useRef(null);
   const userScrollingRef = useRef(false);
   const scrollTimeoutRef = useRef(null);
+  const prevActiveIdxRef = useRef(activeIdx);
 
-  // Auto-scroll active line to center
+  // Auto-scroll active line to center.
+  // A jump of more than 1 line means the user seeked — override scroll suppression.
   useEffect(() => {
+    const prev = prevActiveIdxRef.current;
+    prevActiveIdxRef.current = activeIdx;
+    if (Math.abs(activeIdx - prev) > 1) userScrollingRef.current = false;
     if (userScrollingRef.current) return;
     if (activeRef.current && containerRef.current) {
       activeRef.current.scrollIntoView({

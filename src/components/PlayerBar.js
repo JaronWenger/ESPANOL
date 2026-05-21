@@ -174,7 +174,7 @@ export default function PlayerBar({
           <span className="player-time">{formatTime(displayTime)}</span>
           <div
             ref={scrubTrackRef}
-            className={`player-scrubber-track ${!hasAudio ? 'disabled' : ''} ${scrubbing ? 'scrubbing' : ''}`}
+            className={`player-scrubber-track ${(!hasAudio || !duration) ? 'disabled' : ''} ${scrubbing ? 'scrubbing' : ''}`}
             onPointerDown={handleScrubDown}
             onPointerMove={handleScrubMove}
             onPointerUp={handleScrubUp}
