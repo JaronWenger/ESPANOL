@@ -109,8 +109,12 @@ export default function LyricsDisplay({
             ref={isActive ? activeRef : null}
             className={`lyric-line ${isActive ? 'active' : ''} ${isPast ? 'past' : ''}`}
             onClick={() => {
-              if (isActive && !isPlaying) speakLine(line.spanish);
-              else onSeek(line.time);
+              if (isActive && !isPlaying) {
+                speakLine(line.spanish);
+                onSeek(line.time);
+              } else {
+                onSeek(line.time);
+              }
             }}
           >
             <div className="lyric-spanish">

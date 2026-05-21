@@ -315,7 +315,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <audio ref={player.audioRef} preload="metadata" />
+      <audio ref={player.audioRef} preload="auto" />
 
       {/* Header */}
       <header className="app-header">
