@@ -54,6 +54,8 @@ export default function App() {
   const shuffleRef = useRef(shuffle);
   const repeatRef = useRef(repeat);
   const shuffleOrderRef = useRef(shuffleOrder);
+  // Set to true before a manual skip so the src-change useEffect auto-plays
+  const shouldPlayOnLoadRef = useRef(false);
   useEffect(() => { builtInIdxRef.current = builtInIdx; }, [builtInIdx]);
   useEffect(() => { shuffleRef.current = shuffle; }, [shuffle]);
   useEffect(() => { repeatRef.current = repeat; }, [repeat]);
@@ -102,8 +104,9 @@ export default function App() {
     }).catch(() => setTranslating(false));
   }, []);
 
-  const switchToBuiltIn = useCallback((idx) => {
+  const switchToBuiltIn = useCallback((idx, autoPlay = false) => {
     const s = BUILT_IN_SONGS[idx];
+    shouldPlayOnLoadRef.current = autoPlay;
     setBuiltInIdx(idx);
     setAlbumArts(arts => {
       const cachedArt = arts[idx] || s.albumArt || null;
@@ -190,12 +193,16 @@ export default function App() {
     [player, applyTranslations]
   );
 
-  // Sync audio src when song changes
+  // Sync audio src when song changes; auto-play if a skip requested it
   useEffect(() => {
     const audio = player.audioRef.current;
     if (!audio) return;
     if (song.audioUrl) {
       audio.src = song.audioUrl;
+      if (shouldPlayOnLoadRef.current) {
+        shouldPlayOnLoadRef.current = false;
+        audio.play().catch(() => {});
+      }
     } else {
       audio.removeAttribute('src');
     }
@@ -234,6 +241,30 @@ export default function App() {
     return (builtInIdx + dir + BUILT_IN_SONGS.length) % BUILT_IN_SONGS.length;
   }, [builtInIdx, shuffle, shuffleOrder]);
 
+  const navigateWord = useCallback((dir) => {
+    const nextWordIdx = wordIdx + dir;
+    if (nextWordIdx >= 0 && nextWordIdx < wordList.length) {
+      setWordIdx(nextWordIdx);
+      setSelectedWord(wordList[nextWordIdx]);
+    } else {
+      const lyrics = song.lyrics;
+      let nextLine = lineIdx + dir;
+      while (nextLine >= 0 && nextLine < lyrics.length && lyrics[nextLine].instrumental) {
+        nextLine += dir;
+      }
+      if (nextLine >= 0 && nextLine < lyrics.length) {
+        const words = extractWords(lyrics[nextLine].spanish);
+        if (words.length) {
+          const newWordIdx = dir === 1 ? 0 : words.length - 1;
+          setLineIdx(nextLine);
+          setWordList(words);
+          setWordIdx(newWordIdx);
+          setSelectedWord(words[newWordIdx]);
+        }
+      }
+    }
+  }, [wordIdx, wordList, lineIdx, song.lyrics]);
+
   // Keyboard handler
   useEffect(() => {
     const handler = (e) => {
@@ -242,29 +273,7 @@ export default function App() {
 
       if (selectedWord && (e.code === 'ArrowRight' || e.code === 'ArrowLeft')) {
         e.preventDefault();
-        const dir = e.code === 'ArrowRight' ? 1 : -1;
-        const nextWordIdx = wordIdx + dir;
-
-        if (nextWordIdx >= 0 && nextWordIdx < wordList.length) {
-          setWordIdx(nextWordIdx);
-          setSelectedWord(wordList[nextWordIdx]);
-        } else {
-          const lyrics = song.lyrics;
-          let nextLine = lineIdx + dir;
-          while (nextLine >= 0 && nextLine < lyrics.length && lyrics[nextLine].instrumental) {
-            nextLine += dir;
-          }
-          if (nextLine >= 0 && nextLine < lyrics.length) {
-            const words = extractWords(lyrics[nextLine].spanish);
-            if (words.length) {
-              const newWordIdx = dir === 1 ? 0 : words.length - 1;
-              setLineIdx(nextLine);
-              setWordList(words);
-              setWordIdx(newWordIdx);
-              setSelectedWord(words[newWordIdx]);
-            }
-          }
-        }
+        navigateWord(e.code === 'ArrowRight' ? 1 : -1);
         return;
       }
 
@@ -292,7 +301,7 @@ export default function App() {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [player, showUpload, selectedWord, wordList, wordIdx, lineIdx, song.lyrics, song.audioUrl]);
+  }, [player, showUpload, selectedWord, navigateWord, song.lyrics, song.audioUrl]);
 
   const prevIdx = getNextIdx(-1);
   const nextIdx = getNextIdx(1);
@@ -312,10 +321,12 @@ export default function App() {
           albumArts={albumArts}
           currentIdx={carouselIdx}
           onOpen={() => setShowPlaylist(true)}
+          onSelect={(idx) => switchToBuiltIn(idx, player.isPlaying)}
         />
         <div className="app-header-actions">
           <button className="load-btn" onClick={() => setShowUpload(true)}>
-            + Load Song
+            <span className="load-btn-label">+ Load Song</span>
+            <span className="load-btn-icon" aria-hidden="true">+</span>
           </button>
         </div>
       </header>
@@ -333,12 +344,7 @@ export default function App() {
         lyrics={song.lyrics}
         currentTime={player.currentTime}
         showEnglish={showEnglish}
-        onSeek={(time) => {
-          player.seek(time);
-          if (!player.isPlaying && song.audioUrl) {
-            player.audioRef.current?.play();
-          }
-        }}
+        onSeek={player.seek}
         onWordClick={(word) => {
           document.activeElement?.blur();
           const activeLine = getLyricIndex(song.lyrics, player.currentTime);
@@ -368,8 +374,14 @@ export default function App() {
         onToggleEnglish={() => setShowEnglish((v) => !v)}
         translating={translating}
         hasAudio={!!song.audioUrl}
-        onPrev={() => switchToBuiltIn(prevIdx)}
-        onNext={() => switchToBuiltIn(nextIdx)}
+        onPrev={() => {
+          if (player.currentTime > 3) {
+            player.seek(0);
+          } else {
+            switchToBuiltIn(prevIdx, player.isPlaying);
+          }
+        }}
+        onNext={() => switchToBuiltIn(nextIdx, player.isPlaying)}
         shuffle={shuffle}
         onToggleShuffle={handleToggleShuffle}
         repeat={repeat}
@@ -395,7 +407,11 @@ export default function App() {
 
       {/* Word lookup modal */}
       {selectedWord && (
-        <WordModal word={selectedWord} onClose={() => setSelectedWord(null)} />
+        <WordModal
+          word={selectedWord}
+          onClose={() => setSelectedWord(null)}
+          onNavigate={navigateWord}
+        />
       )}
     </div>
   );

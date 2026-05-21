@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import './PlayerBar.css';
 
 function formatTime(secs) {
@@ -30,19 +31,34 @@ export default function PlayerBar({
   onToggleRepeat,
 }) {
   const progress = duration ? currentTime / duration : 0;
+  const [artBroken, setArtBroken] = useState(false);
+  useEffect(() => { setArtBroken(false); }, [albumArt]);
 
   return (
     <div className="player-bar">
       {/* Song info */}
       <div className="player-info">
-        {albumArt
-          ? <img src={albumArt} alt="Album art" className="player-album-art" />
+        {albumArt && !artBroken
+          ? <img
+              src={albumArt}
+              alt="Album art"
+              className="player-album-art"
+              onError={() => setArtBroken(true)}
+            />
           : <div className="player-note">♪</div>
         }
         <div className="player-meta">
           <div className="player-title">{songTitle || 'No song loaded'}</div>
           <div className="player-artist">{songArtist || 'Upload a song to begin'}</div>
         </div>
+        {/* EN toggle visible only on mobile — sits in the info row */}
+        <button
+          className={`translation-toggle info-en-toggle ${showEnglish ? 'active' : ''} ${translating ? 'loading' : ''}`}
+          onClick={onToggleEnglish}
+          title={translating ? 'Translating…' : showEnglish ? 'Hide English' : 'Show English'}
+        >
+          {translating ? '…' : 'EN'}
+        </button>
       </div>
 
       {/* Center controls */}

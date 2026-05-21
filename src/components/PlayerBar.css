@@ -200,6 +200,11 @@
   min-width: 180px;
 }
 
+/* Hidden on desktop; shown in the info row on mobile */
+.info-en-toggle {
+  display: none;
+}
+
 .translation-toggle {
   background: none;
   border: 1px solid #404040;
@@ -306,16 +311,83 @@
   background: #fff;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
+  /* Stack info on top, controls below — full width both */
   .player-bar {
     flex-wrap: wrap;
-    padding: 12px 16px;
+    padding: 14px 16px 16px;
+    gap: 0;
+    min-height: unset;
   }
-  .player-info {
-    min-width: unset;
-    flex: 0 0 auto;
-  }
+
+  /* Hide volume + desktop EN toggle */
   .player-right {
+    display: none;
+  }
+
+  /* Info row: full width, bigger art */
+  .player-info {
+    flex: 0 0 100%;
     min-width: unset;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .player-album-art,
+  .player-note {
+    width: 72px;
+    height: 72px;
+    border-radius: 12px;
+    font-size: 2rem;
+  }
+  .player-title {
+    font-size: 1.15rem;
+  }
+  .player-artist {
+    font-size: 0.9rem;
+    margin-top: 3px;
+  }
+
+  /* EN button in the info row — pushed to the far right */
+  .info-en-toggle {
+    display: flex;
+    flex-shrink: 0;
+    margin-left: auto;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Controls row: full width, centered */
+  .player-center {
+    flex: 0 0 100%;
+    min-width: unset;
+    max-width: none;
+  }
+  .player-controls {
+    gap: 16px;
+    justify-content: center;
+  }
+  .player-play {
+    width: 58px;
+    height: 58px;
+  }
+  .player-play svg {
+    width: 24px;
+    height: 24px;
+  }
+  .player-extra-btn {
+    width: 34px;
+    height: 34px;
+  }
+  .player-extra-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+  .player-skip {
+    width: 34px;
+    height: 34px;
+  }
+  .player-skip svg {
+    width: 22px;
+    height: 22px;
   }
 }

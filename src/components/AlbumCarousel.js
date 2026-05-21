@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import './AlbumCarousel.css';
 
 const CLONE = 2;
@@ -6,11 +6,16 @@ const ITEM_W = 48;
 const GAP = 10;
 const STEP = ITEM_W + GAP;
 
-export default function AlbumCarousel({ songs, albumArts, currentIdx, onOpen }) {
+export default function AlbumCarousel({ songs, albumArts, currentIdx, onOpen, onSelect }) {
   const n = songs.length;
   const trackRef = useRef(null);
   const [trackPos, setTrackPos] = useState(currentIdx + CLONE);
   const prevIdxRef = useRef(currentIdx);
+  const [brokenUrls, setBrokenUrls] = useState(new Set());
+
+  const handleImgError = useCallback((url) => {
+    setBrokenUrls(prev => new Set([...prev, url]));
+  }, []);
 
   // [clone(n-2), clone(n-1), s0, s1, ..., s(n-1), clone(0), clone(1)]
   const trackItems = [
@@ -67,7 +72,7 @@ export default function AlbumCarousel({ songs, albumArts, currentIdx, onOpen }) 
   const translateX = containerW / 2 - ITEM_W / 2 - trackPos * STEP;
 
   return (
-    <div className="album-carousel" style={{ width: containerW }} onClick={onOpen}>
+    <div className="album-carousel" style={{ width: containerW }}>
       <div
         ref={trackRef}
         className="album-carousel-track"
@@ -80,11 +85,29 @@ export default function AlbumCarousel({ songs, albumArts, currentIdx, onOpen }) 
       >
         {trackItems.map((songIdx, i) => {
           const isCenter = i === trackPos;
+          const isLeft = i === trackPos - 1;
+          const isRight = i === trackPos + 1;
           const art = albumArts[songIdx];
+          const showArt = art && !brokenUrls.has(art);
+
+          let handleClick;
+          if (isCenter) handleClick = onOpen;
+          else if (isLeft || isRight) handleClick = () => onSelect(songIdx);
+
           return (
-            <div key={i} className={`carousel-cover ${isCenter ? 'center' : 'side'}`}>
-              {art
-                ? <img src={art} alt={songs[songIdx]?.title} draggable={false} />
+            <div
+              key={i}
+              className={`carousel-cover ${isCenter ? 'center' : 'side'}`}
+              onClick={handleClick}
+              style={{ cursor: handleClick ? 'pointer' : 'default' }}
+            >
+              {showArt
+                ? <img
+                    src={art}
+                    alt={songs[songIdx]?.title}
+                    draggable={false}
+                    onError={() => handleImgError(art)}
+                  />
                 : <div className="carousel-placeholder">♪</div>
               }
             </div>

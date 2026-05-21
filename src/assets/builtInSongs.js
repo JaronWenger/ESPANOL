@@ -16,6 +16,12 @@ import { VIVIR_LYRICS } from './vivirData';
 
 export const BUILT_IN_SONGS = [
   {
+    title: 'Vivir Mi Vida',
+    artist: 'Marc Anthony',
+    audioUrl: vivirAudio,
+    lyrics: VIVIR_LYRICS,
+  },
+  {
     title: 'Lo Que Le Pasó a Hawaii',
     artist: 'Bad Bunny',
     audioUrl: hawaiiAudio,
@@ -40,11 +46,5 @@ export const BUILT_IN_SONGS = [
     audioUrl: monacoAudio,
     lyrics: MONACO_LYRICS,
     albumArt: 'https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/00/e0/31/00e0311e-9dab-fd0c-fc37-ee3d36aafbf3/197190137897.jpg/500x500bb.jpg',
-  },
-  {
-    title: 'Vivir Mi Vida',
-    artist: 'Marc Anthony',
-    audioUrl: vivirAudio,
-    lyrics: VIVIR_LYRICS,
   },
 ];

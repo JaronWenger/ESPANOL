@@ -33,8 +33,15 @@
 .lyric-line.active {
   cursor: default;
 }
-.lyric-line:hover {
-  background: rgba(255, 255, 255, 0.06);
+@media (hover: hover) {
+  .lyric-line:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+}
+@media (hover: none) {
+  .lyric-line:active {
+    background: rgba(255, 255, 255, 0.06);
+  }
 }
 
 .lyric-spanish {
@@ -84,9 +91,17 @@
   transition: background 0.1s, color 0.1s;
   padding: 0 1px;
 }
-.lyric-word:hover {
-  background: rgba(29, 185, 84, 0.25);
-  color: #1ed760;
+@media (hover: hover) {
+  .lyric-word:hover {
+    background: rgba(29, 185, 84, 0.25);
+    color: #1ed760;
+  }
+}
+@media (hover: none) {
+  .lyric-word:active {
+    background: rgba(29, 185, 84, 0.25);
+    color: #1ed760;
+  }
 }
 
 /* Instrumental lines */
@@ -133,4 +148,19 @@
 .lyrics-empty-sub {
   font-size: 0.85rem !important;
   color: #6b6b6b !important;
+}
+
+@media (max-width: 600px) {
+  /* Always lay out at the large (active) font size so line breaks are
+     determined once and never change. Inactive lines are scaled down
+     visually via transform, which has no effect on layout. */
+  .lyric-spanish {
+    font-size: 1.55rem;
+    transform: scale(0.871); /* 1.35 / 1.55 */
+    transform-origin: left center;
+    transition: color 0.25s, transform 0.25s;
+  }
+  .lyric-line.active .lyric-spanish {
+    transform: scale(1);
+  }
 }

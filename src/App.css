@@ -67,6 +67,10 @@ button {
   background: rgba(255, 255, 255, 0.05);
 }
 
+.load-btn-icon {
+  display: none;
+}
+
 /* ── Song banner ── */
 .song-banner {
   padding: 16px 40px 10px;
@@ -88,6 +92,7 @@ button {
   margin-top: 2px;
 }
 
+
 .song-banner-hint {
   font-size: 0.72rem;
   color: #535353;
@@ -107,4 +112,30 @@ kbd {
   font-family: monospace;
   font-size: 0.7rem;
   color: #b3b3b3;
+}
+
+/* ── Mobile ── */
+@media (max-width: 600px) {
+  .app-header {
+    padding: 8px 14px;
+  }
+
+  .app-logo-img {
+    height: 28px;
+  }
+
+  /* Compact load button: show "+" only */
+  .load-btn {
+    padding: 6px 12px;
+  }
+  .load-btn-label {
+    display: none;
+  }
+  .load-btn-icon {
+    display: inline;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
 }

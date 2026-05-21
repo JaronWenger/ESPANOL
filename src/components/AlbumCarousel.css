@@ -1,6 +1,5 @@
 .album-carousel {
   overflow: hidden;
-  cursor: pointer;
   border-radius: 8px;
   flex-shrink: 0;
 }
