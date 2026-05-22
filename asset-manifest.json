@@ -1,21 +1,32 @@
 {
   "files": {
-    "main.css": "/ESPANOL/static/css/main.4a9fac91.css",
-    "main.js": "/ESPANOL/static/js/main.0161c98f.js",
+    "main.css": "/ESPANOL/static/css/main.e8cd8847.css",
+    "main.js": "/ESPANOL/static/js/main.2e89e1ca.js",
     "static/js/453.418ae1c6.chunk.js": "/ESPANOL/static/js/453.418ae1c6.chunk.js",
+    "static/media/BAILE INoLVIDABLE Instrumental.mp3": "/ESPANOL/static/media/BAILE INoLVIDABLE Instrumental.8ff67c0436ab2c29d669.mp3",
     "static/media/BAILE INoLVIDABLE.mp3": "/ESPANOL/static/media/BAILE INoLVIDABLE.132d11ed2840c743dcee.mp3",
     "static/media/MONACO.mp3": "/ESPANOL/static/media/MONACO.3666fe0effa07745c21d.mp3",
+    "static/media/MONACO Instrumental.mp3": "/ESPANOL/static/media/MONACO Instrumental.6e3fb01b17b8599efa2f.mp3",
     "static/media/Vivir Mi Vida.mp3": "/ESPANOL/static/media/Vivir Mi Vida.27af7b6ecd98f81a9563.mp3",
+    "static/media/Vivir Mi Vida Instrumental.mp3": "/ESPANOL/static/media/Vivir Mi Vida Instrumental.bf0c3cb0d595b38ef57c.mp3",
+    "static/media/LO QUE LE PASÓ A HAWAii Instrumental.mp3": "/ESPANOL/static/media/LO QUE LE PASÓ A HAWAii Instrumental.e0deccb728a3ec69b3f7.mp3",
     "static/media/LO QUE LE PASÓ A HAWAii.mp3": "/ESPANOL/static/media/LO QUE LE PASÓ A HAWAii.2326142873fec8f3f40b.mp3",
     "static/media/ME JALO.mp3": "/ESPANOL/static/media/ME JALO.124e46ac4f53f10552ed.mp3",
+    "static/media/Que Pasaria Instrumental.mp3": "/ESPANOL/static/media/Que Pasaria Instrumental.5a68e5062ea5ced30bf3.mp3",
+    "static/media/Que Pasaria.mp3": "/ESPANOL/static/media/Que Pasaria.f0e56a8450e58a255509.mp3",
+    "static/media/mañana.mp3": "/ESPANOL/static/media/mañana.d96c7200be832e643a1c.mp3",
+    "static/media/ME JALO Instrumental.mp3": "/ESPANOL/static/media/ME JALO Instrumental.9a0717644b86108aef9f.mp3",
+    "static/media/Cancion del mariachi Instrumental.mp3": "/ESPANOL/static/media/Cancion del mariachi Instrumental.f6b0349d1d05544b845c.mp3",
+    "static/media/mañana Instrumental.mp3": "/ESPANOL/static/media/mañana Instrumental.423545c635b00259e31a.mp3",
+    "static/media/Cancion del mariachi.mp3": "/ESPANOL/static/media/Cancion del mariachi.d76f7387546e578dc2e6.mp3",
     "static/media/Espanol-modified.png": "/ESPANOL/static/media/Espanol-modified.a09409f3507a0b69d1fe.png",
     "index.html": "/ESPANOL/index.html",
-    "main.4a9fac91.css.map": "/ESPANOL/static/css/main.4a9fac91.css.map",
-    "main.0161c98f.js.map": "/ESPANOL/static/js/main.0161c98f.js.map",
+    "main.e8cd8847.css.map": "/ESPANOL/static/css/main.e8cd8847.css.map",
+    "main.2e89e1ca.js.map": "/ESPANOL/static/js/main.2e89e1ca.js.map",
     "453.418ae1c6.chunk.js.map": "/ESPANOL/static/js/453.418ae1c6.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.4a9fac91.css",
-    "static/js/main.0161c98f.js"
+    "static/css/main.e8cd8847.css",
+    "static/js/main.2e89e1ca.js"
   ]
 }
