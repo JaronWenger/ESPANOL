@@ -243,7 +243,7 @@ export function useAudioPlayer() {
 
     const ctx = acxRef.current;
     const outSrc = acxSrcRef.current;
-    if (ctx.state === 'suspended') ctx.resume();
+    const resume = ctx.state === 'suspended' ? ctx.resume() : Promise.resolve();
 
     const outGain = ctx.createGain();
     outGain.gain.value = 1;
@@ -292,33 +292,33 @@ export function useAudioPlayer() {
           setCurrentTime(pos);
           toggle();
 
-          // Clear suppression once the main element has seeked to the right spot.
-          const clearSwap = () => {
+          // Keep inAudio bridging until the main element has actually seeked and
+          // buffered — on iOS this can take hundreds of ms (no shared cache between
+          // elements). Only then ramp inGain to 0 so there's no silent gap.
+          let bridgeDone = false;
+          const cutover = () => {
+            if (bridgeDone) return;
+            bridgeDone = true;
             swappingRef.current = false;
             setCurrentTime(audio.currentTime);
-          };
-          audio.addEventListener('seeked', clearSwap, { once: true });
-          setTimeout(() => { swappingRef.current = false; }, 1500); // safety fallback
-
-          // Keep inAudio playing to bridge any gap while the main element reloads,
-          // then smooth-ramp inGain to 0 to avoid a click at the cut point.
-          setTimeout(() => {
-            inGain.gain.setTargetAtTime(0, ctx.currentTime, 0.01); // ~30 ms decay
+            inGain.gain.setTargetAtTime(0, ctx.currentTime, 0.01);
             setTimeout(() => {
               inAudio.pause();
               try { inSrc.disconnect(); } catch {}
               try { inGain.disconnect(); } catch {}
             }, 80);
-          }, 200);
+          };
+          audio.addEventListener('seeked', cutover, { once: true });
+          setTimeout(cutover, 1500); // safety cap — never bridge longer than 1.5s
         }
       };
       requestAnimationFrame(tick);
     };
 
     // Call play() immediately while still in the user-gesture stack (iOS requirement).
-    // inGain is 0 so nothing is audible. After play() resolves, seek to t;
-    // once seeked and buffered at that position, kick off the crossfade.
-    inAudio.play()
+    // inGain is 0 so nothing is audible. Wait for both play() and ctx.resume() before
+    // seeking and starting the fade — on iOS the context may still be suspended otherwise.
+    Promise.all([inAudio.play(), resume])
       .then(() => {
         if (t > 0) {
           inAudio.currentTime = t;
