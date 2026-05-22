@@ -256,7 +256,8 @@
 }
 
 /* Hidden on desktop; shown in the info row on mobile */
-.info-en-toggle {
+.info-en-toggle,
+.info-karaoke-btn {
   display: none;
 }
 
@@ -379,11 +380,17 @@
     font-size: 0.78rem;
   }
 
-  /* EN button in the info row — pushed to the far right */
-  .info-en-toggle {
+  /* Karaoke + EN buttons in the info row — pushed to the far right */
+  .info-karaoke-btn {
     display: flex;
     flex-shrink: 0;
     margin-left: auto;
+    align-items: center;
+    justify-content: center;
+  }
+  .info-en-toggle {
+    display: flex;
+    flex-shrink: 0;
     align-items: center;
     justify-content: center;
   }

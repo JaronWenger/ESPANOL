@@ -89,19 +89,19 @@ export const BUILT_IN_SONGS = [
     albumArt: 'https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/78/9a/79/789a7928-5f4a-5f08-611c-518b5908906a/859712676412_cover.jpg/500x500bb.jpg',
   },
   {
-    title: 'Qué Pasaría...',
-    artist: 'Rauw Alejandro & Bad Bunny',
-    audioUrl: quePasariaAudio,
-    karaokeUrl: quePasariaKaraoke,
-    lyrics: QUE_PASARIA_LYRICS,
-    albumArt: 'https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/ab/e8/09/abe8092d-ef44-61b9-6b50-ab7efb78ca51/196872401516.jpg/500x500bb.jpg',
-  },
-  {
     title: 'Mañana',
     artist: 'Tainy, Young Miko & The Marías',
     audioUrl: mananaAudio,
     karaokeUrl: mananaKaraoke,
     lyrics: MANANA_LYRICS,
     albumArt: 'https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/ad/da/1f/adda1f4a-f2d3-fe31-c965-e0753d2990ad/196922654572_Cover.jpg/500x500bb.jpg',
+  },
+  {
+    title: 'Qué Pasaría...',
+    artist: 'Rauw Alejandro & Bad Bunny',
+    audioUrl: quePasariaAudio,
+    karaokeUrl: quePasariaKaraoke,
+    lyrics: QUE_PASARIA_LYRICS,
+    albumArt: 'https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/ab/e8/09/abe8092d-ef44-61b9-6b50-ab7efb78ca51/196872401516.jpg/500x500bb.jpg',
   },
 ];
