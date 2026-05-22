@@ -473,6 +473,23 @@
   to { transform: rotate(360deg); }
 }
 
+.upload-karaoke-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.upload-karaoke-label {
+  font-size: 0.82rem;
+  color: #b3b3b3;
+  white-space: nowrap;
+}
+
+.upload-optional {
+  color: #535353;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

@@ -17,6 +17,7 @@ export default function UploadModal({ onLoad, onClose }) {
   const [lrcPreview, setLrcPreview] = useState(null); // parsed lyrics from lrclib
   const [lrcFile, setLrcFile] = useState(null);       // manual .lrc file
   const [lrcText, setLrcText] = useState('');         // manual paste
+  const [karaokeFile, setKaraokeFile] = useState(null); // optional instrumental
   const [tab, setTab] = useState('auto');             // 'auto' | 'manual'
   const [recognizing, setRecognizing] = useState(false);
   const [fetching, setFetching] = useState(false);
@@ -24,6 +25,7 @@ export default function UploadModal({ onLoad, onClose }) {
 
   const mp3Ref = useRef();
   const lrcRef = useRef();
+  const karaokeRef = useRef();
 
   const handleMp3Drop = (e) => {
     e.preventDefault();
@@ -90,6 +92,7 @@ export default function UploadModal({ onLoad, onClose }) {
     if (!lrcPreview?.length) return setError('Fetch lyrics first.');
     onLoad({
       audioUrl: URL.createObjectURL(mp3File),
+      karaokeUrl: karaokeFile ? URL.createObjectURL(karaokeFile) : null,
       lyrics: lrcPreview,
       title: title || mp3File.name.replace(/\.[^.]+$/, ''),
       artist: artist || 'Unknown Artist',
@@ -119,6 +122,7 @@ export default function UploadModal({ onLoad, onClose }) {
 
     onLoad({
       audioUrl: URL.createObjectURL(mp3File),
+      karaokeUrl: karaokeFile ? URL.createObjectURL(karaokeFile) : null,
       lyrics,
       title: detectedTitle || mp3File.name.replace(/\.[^.]+$/, ''),
       artist: detectedArtist || 'Unknown Artist',
@@ -216,6 +220,15 @@ export default function UploadModal({ onLoad, onClose }) {
 
             {error && <div className="upload-error">{error}</div>}
 
+            <div className="upload-karaoke-row">
+              <span className="upload-karaoke-label">Karaoke version <span className="upload-optional">(optional)</span></span>
+              <button className="lrc-pick-btn" onClick={() => karaokeRef.current.click()} type="button">
+                {karaokeFile ? karaokeFile.name : 'Add instrumental MP3'}
+              </button>
+              <input ref={karaokeRef} type="file" accept="audio/*" style={{ display: 'none' }}
+                onChange={(e) => setKaraokeFile(e.target.files[0])} />
+            </div>
+
             <button
               className="upload-submit"
               onClick={submitAuto}
@@ -285,6 +298,13 @@ export default function UploadModal({ onLoad, onClose }) {
             </div>
 
             {error && <div className="upload-error">{error}</div>}
+
+            <div className="upload-karaoke-row">
+              <span className="upload-karaoke-label">Karaoke version <span className="upload-optional">(optional)</span></span>
+              <button className="lrc-pick-btn" onClick={() => karaokeRef.current.click()} type="button">
+                {karaokeFile ? karaokeFile.name : 'Add instrumental MP3'}
+              </button>
+            </div>
 
             <button className="upload-submit" onClick={submitManual} disabled={!mp3File}>
               Load Song

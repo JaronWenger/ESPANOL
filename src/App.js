@@ -66,6 +66,9 @@ export default function App() {
     BUILT_IN_SONGS.map(s => s.albumArt || null)
   );
   const [showPlaylist, setShowPlaylist] = useState(false);
+  const [karaokeActive, setKaraokeActive] = useState(false);
+  const karaokeActiveRef = useRef(false);
+  useEffect(() => { karaokeActiveRef.current = karaokeActive; }, [karaokeActive]);
 
   // Keep refs for use inside the 'ended' event listener
   const builtInIdxRef = useRef(builtInIdx);
@@ -123,7 +126,26 @@ export default function App() {
     }).catch(() => setTranslating(false));
   }, []);
 
+  const resetKaraoke = useCallback(() => {
+    if (!karaokeActiveRef.current) return;
+    setKaraokeActive(false);
+    player.setKaraokeOff();
+  }, [player]);
+
+  const handleToggleKaraoke = useCallback(() => {
+    const newActive = !karaokeActive;
+    setKaraokeActive(newActive);
+    if (song.karaokeUrl) {
+      // High-quality: swap to the pre-processed instrumental track
+      player.swapSrc(newActive ? song.karaokeUrl : song.audioUrl);
+    } else {
+      // Fallback: Web Audio phase cancellation (L−R)
+      player.toggleKaraoke();
+    }
+  }, [karaokeActive, song.karaokeUrl, song.audioUrl, player]);
+
   const switchToBuiltIn = useCallback((idx, autoPlay = false) => {
+    resetKaraoke();
     const s = BUILT_IN_SONGS[idx];
     shouldPlayOnLoadRef.current = autoPlay;
     setBuiltInIdx(idx);
@@ -155,6 +177,10 @@ export default function App() {
     if (!audio) return;
 
     const handleEnded = () => {
+      if (karaokeActiveRef.current) {
+        setKaraokeActive(false);
+        player.setKaraokeOff();
+      }
       const r = repeatRef.current;
       const s = shuffleRef.current;
       const idx = builtInIdxRef.current;
@@ -192,9 +218,10 @@ export default function App() {
   }, [player.audioRef]);
 
   const loadSong = useCallback(
-    ({ audioUrl, lyrics, title, artist }) => {
+    ({ audioUrl, karaokeUrl, lyrics, title, artist }) => {
+      resetKaraoke();
       setBuiltInIdx(-1);
-      setSong({ title, artist, audioUrl, lyrics, albumArt: null });
+      setSong({ title, artist, audioUrl, karaokeUrl: karaokeUrl || null, lyrics, albumArt: null });
       player.loadSrc(audioUrl);
       setShowUpload(false);
       setSelectedWord(null);
@@ -203,7 +230,7 @@ export default function App() {
         .then((art) => { if (art) setSong((s) => ({ ...s, albumArt: art })); })
         .catch(() => {});
     },
-    [player, applyTranslations]
+    [player, applyTranslations, resetKaraoke]
   );
 
   // Sync audio src when song changes; auto-play if a skip requested it
@@ -406,6 +433,8 @@ export default function App() {
         onToggleShuffle={handleToggleShuffle}
         repeat={repeat}
         onToggleRepeat={handleToggleRepeat}
+        karaoke={karaokeActive}
+        onToggleKaraoke={handleToggleKaraoke}
       />
 
       {/* Playlist modal */}

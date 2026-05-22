@@ -29,6 +29,8 @@ export default function PlayerBar({
   onToggleShuffle,
   repeat,
   onToggleRepeat,
+  karaoke,
+  onToggleKaraoke,
 }) {
   const [artBroken, setArtBroken] = useState(false);
   useEffect(() => { setArtBroken(false); }, [albumArt]);
@@ -197,6 +199,21 @@ export default function PlayerBar({
           title={translating ? 'Translating…' : showEnglish ? 'Hide English translation' : 'Show English translation'}
         >
           {translating ? '…' : 'EN'}
+        </button>
+
+        {/* Karaoke toggle */}
+        <button
+          className={`player-extra-btn ${karaoke ? 'active' : ''}`}
+          onClick={onToggleKaraoke}
+          title={karaoke ? 'Karaoke on — vocals muted' : 'Karaoke mode'}
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            {karaoke ? (
+              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1 1.93c-3.94-.49-7-3.85-7-7.93h2c0 3.31 2.69 6 6 6s6-2.69 6-6h2c0 4.08-3.06 7.44-7 7.93V20h4v2H8v-2h4v-2.07zM3.27 3L2 4.27 8.35 10.62C8.13 11.07 8 11.52 8 12H6c0-1.1.45-2.1 1.17-2.83L3.27 3zm6.47 6.47l1.06 1.06C10.31 10.82 10 11.39 10 12c0 1.1.9 2 2 2 .61 0 1.18-.31 1.53-.8l.92.92C13.96 14.67 13.03 15 12 15c-1.66 0-3-1.34-3-3 0-1.03.33-1.96.74-2.53z"/>
+            ) : (
+              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1 1.93c-3.94-.49-7-3.85-7-7.93h2c0 3.31 2.69 6 6 6s6-2.69 6-6h2c0 4.08-3.06 7.44-7 7.93V20h4v2H8v-2h4v-2.07z"/>
+            )}
+          </svg>
         </button>
 
         {/* Volume */}
