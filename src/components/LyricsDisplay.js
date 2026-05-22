@@ -20,6 +20,15 @@ export default function LyricsDisplay({
   // iOS Safari ignores smooth scrollIntoView during mount — use instant on first call.
   const isFirstScrollRef = useRef(true);
 
+  // Pressing play re-centers the active line regardless of scroll suppression.
+  useEffect(() => {
+    if (!isPlaying) return;
+    userScrollingRef.current = false;
+    if (activeRef.current) {
+      activeRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [isPlaying]);
+
   // Auto-scroll active line to center.
   // A jump of more than 1 line means the user seeked — override scroll suppression.
   useEffect(() => {
@@ -103,7 +112,7 @@ export default function LyricsDisplay({
   }
 
   return (
-    <div className="lyrics-container" ref={containerRef}>
+    <div className="lyrics-container" ref={containerRef} translate="no">
       <div className="lyrics-padding-top" />
       {lyrics.map((line, idx) => {
         const isActive = idx === activeIdx;
