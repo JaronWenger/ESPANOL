@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/ESPANOL/static/css/main.e8cd8847.css",
-    "main.js": "/ESPANOL/static/js/main.2e89e1ca.js",
+    "main.css": "/ESPANOL/static/css/main.69dc3c4c.css",
+    "main.js": "/ESPANOL/static/js/main.a544f567.js",
     "static/js/453.418ae1c6.chunk.js": "/ESPANOL/static/js/453.418ae1c6.chunk.js",
     "static/media/BAILE INoLVIDABLE Instrumental.mp3": "/ESPANOL/static/media/BAILE INoLVIDABLE Instrumental.8ff67c0436ab2c29d669.mp3",
     "static/media/BAILE INoLVIDABLE.mp3": "/ESPANOL/static/media/BAILE INoLVIDABLE.132d11ed2840c743dcee.mp3",
@@ -21,12 +21,12 @@
     "static/media/Cancion del mariachi.mp3": "/ESPANOL/static/media/Cancion del mariachi.d76f7387546e578dc2e6.mp3",
     "static/media/Espanol-modified.png": "/ESPANOL/static/media/Espanol-modified.a09409f3507a0b69d1fe.png",
     "index.html": "/ESPANOL/index.html",
-    "main.e8cd8847.css.map": "/ESPANOL/static/css/main.e8cd8847.css.map",
-    "main.2e89e1ca.js.map": "/ESPANOL/static/js/main.2e89e1ca.js.map",
+    "main.69dc3c4c.css.map": "/ESPANOL/static/css/main.69dc3c4c.css.map",
+    "main.a544f567.js.map": "/ESPANOL/static/js/main.a544f567.js.map",
     "453.418ae1c6.chunk.js.map": "/ESPANOL/static/js/453.418ae1c6.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.e8cd8847.css",
-    "static/js/main.2e89e1ca.js"
+    "static/css/main.69dc3c4c.css",
+    "static/js/main.a544f567.js"
   ]
 }
