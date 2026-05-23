@@ -206,129 +206,24 @@ export function useAudioPlayer() {
     setKaraoke(newVal);
   }, []);
 
-  // Equal-power crossfade between two sources.
-  // cos/sin curves keep combined power constant — no loudness dip or boost.
   const swapSrc = useCallback((newSrc) => {
     const audio = audioRef.current;
     if (!audio) return;
-    const savedVol = audio.volume;
     const t = audio.currentTime;
     const wasPlaying = !audio.paused;
-    const FADE_MS = 700;
 
-    // No crossfade needed when paused — just swap the source.
-    if (!wasPlaying) {
-      audio.src = newSrc;
-      pendingSeekRef.current = t;
-      setCurrentTime(t);
-      return;
-    }
+    // swappingRef suppresses the spurious pause event and position-0 timeupdate
+    // that fire when audio.src is reassigned.
+    swappingRef.current = true;
+    audio.src = newSrc;
+    pendingSeekRef.current = t;
+    setCurrentTime(t);
 
-    // Lazy-init AudioContext — only runs once per session.
-    if (!acxRef.current) {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const src = ctx.createMediaElementSource(audio);
-      const splitter = ctx.createChannelSplitter(2);
-      const gainNeg = ctx.createGain(); gainNeg.gain.value = -1;
-      const merger = ctx.createChannelMerger(2);
-      splitter.connect(merger, 0, 0); splitter.connect(merger, 0, 1);
-      splitter.connect(gainNeg, 1);
-      gainNeg.connect(merger, 0, 0); gainNeg.connect(merger, 0, 1);
-      acxRef.current = ctx;
-      acxSrcRef.current = src;
-      acxSplRef.current = splitter;
-      acxMrgRef.current = merger;
-      src.connect(ctx.destination);
-    }
+    if (wasPlaying) toggle();
 
-    const ctx = acxRef.current;
-    const outSrc = acxSrcRef.current;
-    const resume = ctx.state === 'suspended' ? ctx.resume() : Promise.resolve();
-
-    const outGain = ctx.createGain();
-    outGain.gain.value = 1;
-    try { outSrc.disconnect(ctx.destination); } catch {}
-    outSrc.connect(outGain);
-    outGain.connect(ctx.destination);
-
-    const inGain = ctx.createGain();
-    inGain.gain.value = 0;
-    const inAudio = new Audio(newSrc);
-    const inSrc = ctx.createMediaElementSource(inAudio);
-    inSrc.connect(inGain);
-    inGain.connect(ctx.destination);
-
-    let fadeStarted = false;
-    const runFade = () => {
-      if (fadeStarted) return;
-      fadeStarted = true;
-      // Re-sync to outgoing position to correct drift from loading/seeking delay.
-      // inGain is still 0 here so the momentary seek is inaudible.
-      inAudio.currentTime = audio.currentTime;
-
-      const t0 = performance.now();
-      const tick = () => {
-        const p = Math.min(1, (performance.now() - t0) / FADE_MS);
-        const angle = p * Math.PI / 2;
-        outGain.gain.value = Math.cos(angle);
-        inGain.gain.value  = Math.sin(angle);
-
-        if (p < 1) {
-          requestAnimationFrame(tick);
-        } else {
-          // Tear down old source graph.
-          try { outSrc.disconnect(outGain); } catch {}
-          try { outGain.disconnect(); } catch {}
-          outSrc.connect(ctx.destination);
-
-          // Hand off to the main element (preserves all event listeners).
-          // swappingRef suppresses the spurious pause event and position-0 timeupdate
-          // that fire during src reload, so the lyric highlight never jumps.
-          const pos = inAudio.currentTime;
-          swappingRef.current = true;
-          audio.volume = savedVol;
-          audio.src = newSrc;
-          pendingSeekRef.current = pos;
-          setCurrentTime(pos);
-          toggle();
-
-          // Keep inAudio bridging until the main element has actually seeked and
-          // buffered — on iOS this can take hundreds of ms (no shared cache between
-          // elements). Only then ramp inGain to 0 so there's no silent gap.
-          let bridgeDone = false;
-          const cutover = () => {
-            if (bridgeDone) return;
-            bridgeDone = true;
-            swappingRef.current = false;
-            setCurrentTime(audio.currentTime);
-            inGain.gain.setTargetAtTime(0, ctx.currentTime, 0.01);
-            setTimeout(() => {
-              inAudio.pause();
-              try { inSrc.disconnect(); } catch {}
-              try { inGain.disconnect(); } catch {}
-            }, 80);
-          };
-          audio.addEventListener('seeked', cutover, { once: true });
-          setTimeout(cutover, 1500); // safety cap — never bridge longer than 1.5s
-        }
-      };
-      requestAnimationFrame(tick);
-    };
-
-    // Call play() immediately while still in the user-gesture stack (iOS requirement).
-    // inGain is 0 so nothing is audible. Wait for both play() and ctx.resume() before
-    // seeking and starting the fade — on iOS the context may still be suspended otherwise.
-    Promise.all([inAudio.play(), resume])
-      .then(() => {
-        if (t > 0) {
-          inAudio.currentTime = t;
-          inAudio.addEventListener('seeked', runFade, { once: true });
-          setTimeout(runFade, 500); // fallback if seeked never fires
-        } else {
-          runFade();
-        }
-      })
-      .catch(() => runFade());
+    const clear = () => { swappingRef.current = false; setCurrentTime(audio.currentTime); };
+    audio.addEventListener('seeked', clear, { once: true });
+    setTimeout(clear, 1500);
   }, [toggle]);
 
   // Explicitly turn Web Audio karaoke off (for song-change resets).

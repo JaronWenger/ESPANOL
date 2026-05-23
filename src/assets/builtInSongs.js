@@ -30,6 +30,22 @@ import quePasariaKaraoke from './MUSIC/Que Pasaria Instrumental.mp3';
 import mananaAudio from './MUSIC/mañana.mp3';
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import mananaKaraoke from './MUSIC/mañana Instrumental.mp3';
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import callaitaAudio from './MUSIC/CALLAÍTA.mp3';
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import callaitaKaraoke from './MUSIC/CALLAÍTA Instrumental.mp3';
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import dakitiAudio from './MUSIC/DÁKITI.mp3';
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import dakitiKaraoke from './MUSIC/DÁKITI Instrumental.mp3';
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import dtmfAudio from './MUSIC/DtMF.mp3';
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import dtmfKaraoke from './MUSIC/DtMF Instrumental.mp3';
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import meGustasTuAudio from './MUSIC/Me Gustas Tu.mp3';
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import meGustasTuKaraoke from './MUSIC/Me Gustas Tu Instrumental.mp3';
 import { DEFAULT_LYRICS } from './defaultSongData';
 import { ME_JALO_LYRICS } from './meJaloData';
 import { BAILE_LYRICS } from './baileData';
@@ -38,6 +54,10 @@ import { VIVIR_LYRICS } from './vivirData';
 import { CANCION_MARIACHI_LYRICS } from './cancionMariachiData';
 import { QUE_PASARIA_LYRICS } from './quePasariaData';
 import { MANANA_LYRICS } from './mananaData';
+import { CALLAITA_LYRICS } from './callaitaData';
+import { DAKITI_LYRICS } from './dakitiData';
+import { DTMF_LYRICS } from './dtmfData';
+import { ME_GUSTAS_TU_LYRICS } from './meGustasTuData';
 
 export const BUILT_IN_SONGS = [
   {
@@ -103,5 +123,37 @@ export const BUILT_IN_SONGS = [
     karaokeUrl: quePasariaKaraoke,
     lyrics: QUE_PASARIA_LYRICS,
     albumArt: 'https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/ab/e8/09/abe8092d-ef44-61b9-6b50-ab7efb78ca51/196872401516.jpg/500x500bb.jpg',
+  },
+  {
+    title: 'CALLAÍTA',
+    artist: 'Bad Bunny & Tainy',
+    audioUrl: callaitaAudio,
+    karaokeUrl: callaitaKaraoke,
+    lyrics: CALLAITA_LYRICS,
+    albumArt: 'https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/a8/5d/7c/a85d7c43-777a-f2b7-5abc-1e4d59d8fe7c/193483903545.jpg/500x500bb.jpg',
+  },
+  {
+    title: 'DÁKITI',
+    artist: 'Bad Bunny & JHAYCO',
+    audioUrl: dakitiAudio,
+    karaokeUrl: dakitiKaraoke,
+    lyrics: DAKITI_LYRICS,
+    albumArt: 'https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/64/70/1c/64701cff-71ed-912f-ce62-71d409f5e6ad/195497640560.jpg/500x500bb.jpg',
+  },
+  {
+    title: 'DtMF',
+    artist: 'Bad Bunny',
+    audioUrl: dtmfAudio,
+    karaokeUrl: dtmfKaraoke,
+    lyrics: DTMF_LYRICS,
+    albumArt: 'https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/90/5e/7e/905e7ed5-a8fa-a8f3-cd06-0028fdf3afaa/199066342442.jpg/500x500bb.jpg',
+  },
+  {
+    title: 'Me Gustas Tú',
+    artist: 'Manu Chao',
+    audioUrl: meGustasTuAudio,
+    karaokeUrl: meGustasTuKaraoke,
+    lyrics: ME_GUSTAS_TU_LYRICS,
+    albumArt: 'https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/7d/e2/d5/7de2d508-8bb1-4fc6-90aa-f63484c5d6a3/5060281616944_cover.jpg/500x500bb.jpg',
   },
 ];
