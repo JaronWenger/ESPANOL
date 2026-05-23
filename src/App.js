@@ -136,13 +136,13 @@ export default function App() {
     const newActive = !karaokeActive;
     setKaraokeActive(newActive);
     if (song.karaokeUrl) {
-      // High-quality: swap to the pre-processed instrumental track
-      player.swapSrc(newActive ? song.karaokeUrl : song.audioUrl);
+      // High-quality: swap between the two pre-loaded audio elements (instant on mobile)
+      player.swapSrc();
     } else {
-      // Fallback: Web Audio phase cancellation (L−R)
+      // Fallback: Web Audio phase cancellation (L−R) for uploaded songs without karaokeUrl
       player.toggleKaraoke();
     }
-  }, [karaokeActive, song.karaokeUrl, song.audioUrl, player]);
+  }, [karaokeActive, song.karaokeUrl, player]);
 
   const switchToBuiltIn = useCallback((idx, autoPlay = false) => {
     resetKaraoke();
@@ -174,6 +174,7 @@ export default function App() {
   // Auto-advance when song ends (respects repeat + shuffle)
   useEffect(() => {
     const audio = player.audioRef.current;
+    const kar = player.karaokeAudioRef.current;
     if (!audio) return;
 
     const handleEnded = () => {
@@ -214,8 +215,12 @@ export default function App() {
     };
 
     audio.addEventListener('ended', handleEnded);
-    return () => audio.removeEventListener('ended', handleEnded);
-  }, [player.audioRef]);
+    if (kar) kar.addEventListener('ended', handleEnded);
+    return () => {
+      audio.removeEventListener('ended', handleEnded);
+      if (kar) kar.removeEventListener('ended', handleEnded);
+    };
+  }, [player.audioRef, player.karaokeAudioRef]);
 
   const loadSong = useCallback(
     ({ audioUrl, karaokeUrl, lyrics, title, artist }) => {
@@ -248,12 +253,21 @@ export default function App() {
     }
   }, [song.audioUrl, player.audioRef]);
 
-  // Sync repeat='one' with audio.loop
+  // Sync karaoke element src when song changes so it's pre-buffered before first toggle
+  useEffect(() => {
+    const kar = player.karaokeAudioRef.current;
+    if (!kar) return;
+    kar.src = song.karaokeUrl || '';
+  }, [song.karaokeUrl, player.karaokeAudioRef]);
+
+  // Sync repeat='one' with audio.loop on both elements
   useEffect(() => {
     const audio = player.audioRef.current;
+    const kar = player.karaokeAudioRef.current;
     if (!audio) return;
     audio.loop = repeat === 'one';
-  }, [repeat, player.audioRef]);
+    if (kar) kar.loop = repeat === 'one';
+  }, [repeat, player.audioRef, player.karaokeAudioRef]);
 
   const handleToggleShuffle = useCallback(() => {
     setShuffle(v => {
@@ -355,6 +369,7 @@ export default function App() {
   return (
     <div className="app">
       <audio ref={player.audioRef} preload="auto" />
+      <audio ref={player.karaokeAudioRef} preload="auto" />
 
       {/* Header */}
       <header className="app-header">

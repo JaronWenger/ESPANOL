@@ -2,6 +2,9 @@ import { useRef, useState, useEffect, useCallback } from 'react';
 
 export function useAudioPlayer() {
   const audioRef = useRef(null);
+  const karaokeAudioRef = useRef(null);
+  const activeIsKaraokeRef = useRef(false); // which element is currently "live"
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -10,7 +13,7 @@ export function useAudioPlayer() {
   const pendingSeekRef = useRef(null);
   const silentPlayRef = useRef(false);
   const pendingPlayRef = useRef(false);
-  const swappingRef = useRef(false); // true during swapSrc handoff — suppresses spurious state updates
+  const swappingRef = useRef(false); // true during swapSrc — suppresses spurious pause/timeupdate
 
   const [karaoke, setKaraoke] = useState(false);
   const karaokeRef = useRef(false);
@@ -21,25 +24,25 @@ export function useAudioPlayer() {
 
   useEffect(() => {
     const audio = audioRef.current;
+    const kar = karaokeAudioRef.current;
     if (!audio) return;
 
-    const onTimeUpdate = () => {
-      if (swappingRef.current) return; // ignore position-0 updates during src reload
-      setCurrentTime(audio.currentTime);
+    const onTimeUpdate = (e) => {
+      if (swappingRef.current) return;
+      setCurrentTime(e.target.currentTime);
     };
-    const onDurationChange = () => setDuration(audio.duration || 0);
+    // Only the main element drives duration — both tracks are the same song length.
+    const onDurationChange = (e) => {
+      if (e.target === audioRef.current) setDuration(e.target.duration || 0);
+    };
     const onEnded = () => setIsPlaying(false);
-    const onPlay  = () => { if (!silentPlayRef.current) setIsPlaying(true);  };
+    const onPlay  = () => { if (!silentPlayRef.current) setIsPlaying(true); };
     const onPause = () => {
-      if (silentPlayRef.current || swappingRef.current) return; // ignore src-change pause during swap
+      if (silentPlayRef.current || swappingRef.current) return;
       setIsPlaying(false);
     };
-    // Fallback: if metadata loads without a preceding play() (desktop, or iOS
-    // serving from cache), apply any pending seek directly here.
-    // Skip if the silent unlock is in progress — it triggers loadedmetadata
-    // while playing muted, and iOS won't honor a currentTime assignment during
-    // active playback. Leave pendingSeekRef intact for toggle() to apply after
-    // the unlock completes (readyState >= 1, audio paused — seek sticks there).
+    // Fallback: if metadata loads without a preceding play() (desktop/cache hit),
+    // apply any pending seek directly. Skip during silent unlock to avoid racing.
     const onLoadedMetadata = () => {
       if (silentPlayRef.current) return;
       if (pendingSeekRef.current !== null) {
@@ -49,55 +52,66 @@ export function useAudioPlayer() {
       }
     };
 
-    audio.addEventListener('timeupdate',      onTimeUpdate);
-    audio.addEventListener('durationchange',  onDurationChange);
-    audio.addEventListener('ended',           onEnded);
-    audio.addEventListener('play',            onPlay);
-    audio.addEventListener('pause',           onPause);
-    audio.addEventListener('loadedmetadata',  onLoadedMetadata);
+    const els = [audio, kar].filter(Boolean);
+    els.forEach(el => {
+      el.addEventListener('timeupdate',     onTimeUpdate);
+      el.addEventListener('durationchange', onDurationChange);
+      el.addEventListener('ended',          onEnded);
+      el.addEventListener('play',           onPlay);
+      el.addEventListener('pause',          onPause);
+    });
+    audio.addEventListener('loadedmetadata', onLoadedMetadata);
 
     // iOS ignores preload="auto" — nothing loads until play(). On the very first
-    // touch anywhere, silently play-then-immediately-pause so iOS loads the audio
-    // metadata. After this: duration is known, the scrubber is interactive, and
-    // seeks work — all before the user ever presses the play button.
+    // touch anywhere, silently play-then-pause BOTH elements so iOS buffers both
+    // tracks. After this, switching between vocal and instrumental is instant.
     const silentUnlock = () => {
-      if (audio.readyState > 0 || !audio.src) return;
-      silentPlayRef.current = true;
-      audio.muted = true;
-      audio.addEventListener('loadedmetadata', () => {
-        audio.pause();
-        audio.muted = false;
-        silentPlayRef.current = false;
-        if (pendingPlayRef.current) {
-          pendingPlayRef.current = false;
-          audio.play().catch(() => {});
-        }
-      }, { once: true });
-      audio.play().catch(() => {
-        audio.muted = false;
-        silentPlayRef.current = false;
-      });
+      if (audio.readyState === 0 && audio.src) {
+        silentPlayRef.current = true;
+        audio.muted = true;
+        audio.addEventListener('loadedmetadata', () => {
+          audio.pause();
+          audio.muted = false;
+          silentPlayRef.current = false;
+          if (pendingPlayRef.current) {
+            pendingPlayRef.current = false;
+            audio.play().catch(() => {});
+          }
+        }, { once: true });
+        audio.play().catch(() => {
+          audio.muted = false;
+          silentPlayRef.current = false;
+        });
+      }
+      // Silently unlock the karaoke element to start buffering it in parallel.
+      if (kar && kar.readyState === 0 && kar.src) {
+        kar.muted = true;
+        kar.play().then(() => {
+          kar.pause();
+          kar.muted = false;
+        }).catch(() => { kar.muted = false; });
+      }
     };
     document.addEventListener('touchstart', silentUnlock, { once: true, passive: true });
 
     return () => {
-      audio.removeEventListener('timeupdate',      onTimeUpdate);
-      audio.removeEventListener('durationchange',  onDurationChange);
-      audio.removeEventListener('ended',           onEnded);
-      audio.removeEventListener('play',            onPlay);
-      audio.removeEventListener('pause',           onPause);
-      audio.removeEventListener('loadedmetadata',  onLoadedMetadata);
+      els.forEach(el => {
+        el.removeEventListener('timeupdate',     onTimeUpdate);
+        el.removeEventListener('durationchange', onDurationChange);
+        el.removeEventListener('ended',          onEnded);
+        el.removeEventListener('play',           onPlay);
+        el.removeEventListener('pause',          onPause);
+      });
+      audio.removeEventListener('loadedmetadata', onLoadedMetadata);
       document.removeEventListener('touchstart', silentUnlock);
     };
   }, []);
 
   const toggle = useCallback(() => {
-    const audio = audioRef.current;
+    const audio = activeIsKaraokeRef.current ? karaokeAudioRef.current : audioRef.current;
     if (!audio || !audio.src) return;
 
     if (silentPlayRef.current) {
-      // Silent unlock still in progress — queue the play intent and bail.
-      // The loadedmetadata handler above will fire play() when unlock finishes.
       if (audio.paused) pendingPlayRef.current = true;
       return;
     }
@@ -109,10 +123,6 @@ export function useAudioPlayer() {
       pendingSeekRef.current = null;
 
       if (seekTo !== null && audio.readyState < 2) {
-        // readyState 0: silent unlock hasn't fired yet.
-        // readyState 1: silent unlock ran (metadata loaded) but iOS still won't
-        // honor a currentTime assignment before play() — it needs an active play
-        // context to make range requests. Mute, start play, seek in .then(), unmute.
         audio.muted = true;
         audio.play()
           .then(() => {
@@ -133,13 +143,10 @@ export function useAudioPlayer() {
   }, []);
 
   const seek = useCallback((time) => {
-    const audio = audioRef.current;
+    const audio = activeIsKaraokeRef.current ? karaokeAudioRef.current : audioRef.current;
     if (!audio) return;
     setCurrentTime(time);
     if (audio.readyState >= 2) {
-      // readyState 2+ means the browser has buffered data and will honor a seek.
-      // readyState 0-1 on iOS: no buffered data, currentTime assignment is silently
-      // ignored. Store for toggle() to apply via the muted-play-then-seek path.
       audio.currentTime = time;
     } else {
       pendingSeekRef.current = time;
@@ -148,8 +155,9 @@ export function useAudioPlayer() {
 
   const setVolume = useCallback((v) => {
     const audio = audioRef.current;
-    if (!audio) return;
-    audio.volume = v;
+    const kar = karaokeAudioRef.current;
+    if (audio) audio.volume = v;
+    if (kar) kar.volume = v;
     setVolumeState(v);
   }, []);
 
@@ -206,25 +214,36 @@ export function useAudioPlayer() {
     setKaraoke(newVal);
   }, []);
 
-  const swapSrc = useCallback((newSrc) => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    const t = audio.currentTime;
-    const wasPlaying = !audio.paused;
+  // Swap between the pre-loaded vocal and instrumental elements.
+  // Both are already buffered (unlocked on first touchstart), so the switch is instant.
+  const swapSrc = useCallback(() => {
+    const main = audioRef.current;
+    const kar = karaokeAudioRef.current;
+    if (!main || !kar) return;
 
-    // swappingRef suppresses the spurious pause event and position-0 timeupdate
-    // that fire when audio.src is reassigned.
+    const fromEl = activeIsKaraokeRef.current ? kar : main;
+    const toEl   = activeIsKaraokeRef.current ? main : kar;
+
+    const t = fromEl.currentTime;
+    const wasPlaying = !fromEl.paused;
+
+    activeIsKaraokeRef.current = !activeIsKaraokeRef.current;
+
+    // swappingRef suppresses the pause event from fromEl.pause() so isPlaying
+    // doesn't flicker to false mid-swap.
     swappingRef.current = true;
-    audio.src = newSrc;
-    pendingSeekRef.current = t;
+    fromEl.pause();
+    toEl.currentTime = t;
     setCurrentTime(t);
 
-    if (wasPlaying) toggle();
-
-    const clear = () => { swappingRef.current = false; setCurrentTime(audio.currentTime); };
-    audio.addEventListener('seeked', clear, { once: true });
-    setTimeout(clear, 1500);
-  }, [toggle]);
+    if (wasPlaying) {
+      toEl.play()
+        .then(() => { swappingRef.current = false; })
+        .catch(() => { swappingRef.current = false; });
+    } else {
+      swappingRef.current = false;
+    }
+  }, []);
 
   // Explicitly turn Web Audio karaoke off (for song-change resets).
   const setKaraokeOff = useCallback(() => {
@@ -243,6 +262,7 @@ export function useAudioPlayer() {
   }, []);
 
   const loadSrc = useCallback((src) => {
+    activeIsKaraokeRef.current = false; // always start on the vocal element
     setAudioSrc(src);
     setCurrentTime(0);
     setIsPlaying(false);
@@ -251,6 +271,7 @@ export function useAudioPlayer() {
 
   return {
     audioRef,
+    karaokeAudioRef,
     isPlaying,
     currentTime,
     duration,
